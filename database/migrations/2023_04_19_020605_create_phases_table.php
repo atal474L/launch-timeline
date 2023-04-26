@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('phases', function (Blueprint $table) {
             $table->id();
 
+            $table->foreignId('project_id');
             $table->string('phase_name');
             $table->date('deadline');
 

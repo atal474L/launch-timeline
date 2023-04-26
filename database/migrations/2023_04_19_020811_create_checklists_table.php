@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('checklists', function (Blueprint $table) {
             $table->id();
 
+            $table->foreignId('phase_id')->constrained();
             $table->string('question');
             $table->boolean('question_chosen');
             $table->boolean('question_checked');
