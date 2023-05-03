@@ -6,7 +6,7 @@ import Template from "./views/Template";
 import Detail from "./views/Detail";
 import Checklist from "./views/Checklist";
 import DefaultLayout from "./components/DefaultLayout";
-import Countdown from "./components/Countdown";
+import Timeline from "./components/Timeline";
 
 const router = createBrowserRouter([
   {
@@ -19,7 +19,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/test",
-        element: <Countdown />,
+        element: <Timeline />,
       },
       {
         path: "/projecten",

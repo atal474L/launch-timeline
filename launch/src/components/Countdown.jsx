@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Stack } from "react-bootstrap";
 
 export default function Countdown({ date1 }) {
-  const date = new Date("2023-05-18");
+  const date = new Date("2023-05-04");
   const [time, setTime] = useState(getTimeUntil(date));
 
   const timer = useRef();
@@ -10,6 +10,7 @@ export default function Countdown({ date1 }) {
   useEffect(() => {
     timer.current = setInterval(() => {
       setTime(getTimeUntil(date));
+      console.log(time);
     }, 1000);
     return () => clearInterval(timer.current);
   }, [date]);
@@ -26,8 +27,12 @@ export default function Countdown({ date1 }) {
   }, [time]);
 
   function getTimeUntil(date) {
-    const now = new Date();
+    const UTCnow = new Date();
+    const localTime = UTCnow.getTime() - UTCnow.getTimezoneOffset() * 60000;
+    const now = new Date(localTime);
+
     const diff = Math.max(date - now, 0); // difference in millisecs
+    // const diff = date - now;
     const days = Math.floor(diff / (1000 * 60 * 60 * 24)); // days
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));

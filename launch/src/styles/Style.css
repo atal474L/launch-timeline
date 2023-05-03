@@ -6,6 +6,12 @@
   font-family: 'Roboto', sans-serif;
   font-family: 'Roboto Condensed', sans-serif;
 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
 .navbar-brand{
     color: #1E2F31;
     font-family: 'Roboto Condensed', sans-serif;
@@ -60,8 +66,6 @@ a.nav-links:hover::after {
 
 
 /*countdown*/
-
-
 .countdown .vr{
     background-color: #5C6174;
     padding: 1px 0.5px;
@@ -79,3 +83,73 @@ a.nav-links:hover::after {
     text-align: center;
     line-height: 0;
 }
+
+
+/*Timeline*/  
+  .timeline {
+    width: 80%;
+    margin-left: 15%;
+  }
+  .stepWrapper {
+    display: flex;
+    margin-bottom: 4em;
+  }
+  .stepBlock{
+    width: 100%;
+  }
+  .stepBlock .circleWrapper {
+    position: relative;
+    
+  }
+
+  .stepBlock:not(:last-child) > .circleWrapper::after {
+    content: '';
+    width: 100%;
+    background-color: #037272;
+    height: 3px;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    margin: auto;
+    z-index: -1;
+  }
+  .stepBlock:not(:last-child).activated > .circleWrapper::after, .stepBlock:not(:last-child).activated ~ .stepBlock:not(:last-child) > .circleWrapper::after {
+    height: 2px;
+    background-color: #5C6174;
+    opacity: 0.6;
+  }
+
+  .circle { 
+    background-color: #f8f8f8;
+    border: 2px solid #037272;
+    border-radius: 50%;
+    width: 1em;
+    height: 1em;
+    -moz-background-clip: padding-box;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+  }
+  .activated .circle {
+    background-color: #037272;
+    border-color: transparent;
+    transform: scale(2);
+  }
+  
+  span{
+    font-family: 'Roboto Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1em;
+    color: #5C6174;
+  }
+
+  .activated span {
+    color: #037272;
+    font-size: 2em;
+  }
+
+
+
+  
+  /* .primaryButton:disabled {
+    opacity: 0.5;
+  } */
