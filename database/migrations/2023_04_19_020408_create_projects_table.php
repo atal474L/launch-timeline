@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('name');
             $table->enum('state', ['active', 'inactive']);
             $table->date('deadline');
-            $table->integer('active_phase_id');
+//            $table->integer('active_phase_id');
 
             $table->timestamps();
             $table->softDeletes();
