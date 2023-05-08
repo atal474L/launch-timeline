@@ -1,10 +1,17 @@
 import Container from "react-bootstrap/Container";
 import Navbar from "react-bootstrap/Navbar";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Navigate, Outlet } from "react-router-dom";
 import "./../styles/Style.css";
 import { Nav } from "react-bootstrap";
+import { userStateContext } from "../contexts/ContextProvider";
 
 export default function DefaultLayout() {
+  const { currentUser, userToken } = userStateContext();
+
+  if (!userToken) {
+    return <Navigate to={"login"}></Navigate>;
+  }
+
   const logout = (event) => {
     event.preventDefault();
     console.log("uitgelogd");
@@ -45,7 +52,7 @@ export default function DefaultLayout() {
               className={"nav-links"}
               onClick={(event) => logout(event)}
             >
-              Uitloggen
+              Uitloggen {currentUser.name}
             </NavLink>
           </Navbar.Collapse>
         </Container>

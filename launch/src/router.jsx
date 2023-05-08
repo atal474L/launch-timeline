@@ -7,6 +7,7 @@ import Detail from "./views/Detail";
 import Checklist from "./views/Checklist";
 import DefaultLayout from "./components/DefaultLayout";
 import Timeline from "./components/Timeline";
+import Login from "./views/Login";
 
 const router = createBrowserRouter([
   {
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
         element: <Checklist />,
       },
     ],
+  },
+  {
+    path: "/login",
+    element: <Login></Login>,
   },
 ]);
 
