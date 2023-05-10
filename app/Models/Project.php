@@ -20,9 +20,9 @@ class Project extends Model
 
     ];
 
-    public function users(): BelongsToMany
+    public function user(): BelongsTo
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function phases(): BelongsToMany

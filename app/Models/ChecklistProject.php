@@ -13,7 +13,9 @@ class ChecklistProject extends Model
 
     protected $fillable = [
         'question_checked',
-        'comment'
+        'comment',
+        'checklist_template_id',
+        'phase_id'
     ];
 
     public function project(): BelongsTo

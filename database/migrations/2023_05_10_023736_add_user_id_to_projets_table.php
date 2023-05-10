@@ -13,19 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('projects', function (Blueprint $table) {
-            $table->id();
-
-            $table->string('name');
-            $table->enum('state', ['active', 'inactive']);
-            $table->date('deadline');
-//            $table->integer('active_phase_id');
+        Schema::table('projects', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained()
                 ->restrictOnUpdate()
                 ->restrictOnDelete();
-
-            $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -36,6 +27,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('projects');
+        Schema::table('projects', function (Blueprint $table) {
+            //
+        });
     }
 };

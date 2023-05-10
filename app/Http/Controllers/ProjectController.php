@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ChecklistTemplate;
 use App\Models\Phase;
 use App\Models\Project;
 use Illuminate\Http\Request;
@@ -63,15 +64,30 @@ class ProjectController extends Controller
         return $this->respondWithSuccess($data);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+
+    public function storeProject(Request $request)
     {
-        //
+        $template = ChecklistTemplate::select('id', 'phase_id')->get();
+        $attributes = $template->map(function ($item) {
+            return [
+                'checklist_template_id' => $item->id,
+                'phase_id' => $item->phase_id,
+                'question_checked' => 0,
+                'comment' => ''
+            ];
+        })->all();
+
+
+        $project = new Project($request->all());
+        $project->user_id = $request->user_id;
+        $project->save();
+
+        Project::findorfail($project->id)->phases()->sync($request->phases);
+
+        Project::findorfail($project->id)->checklistProjects()->createMany($attributes);
+
+        return response()->json(['message' => 'The project has been created'], 201);
+
     }
 
     /**
