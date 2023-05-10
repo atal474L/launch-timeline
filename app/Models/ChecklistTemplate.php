@@ -8,26 +8,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-
-class Project extends Model
+class ChecklistTemplate extends Model
 {
     use HasFactory;
 
+    protected $table = 'checklist_templates';
+
     protected $fillable = [
-        'name',
-        'state',
-        'deadline',
+        'question',
 
     ];
 
-    public function users(): BelongsToMany
+    public function phase(): BelongsTo
     {
-        return $this->belongsToMany(User::class);
-    }
-
-    public function phases(): BelongsToMany
-    {
-        return $this->belongsToMany(Phase::class)->withPivot('deadline', 'active');;
+        return $this->belongsTo(Phase::class);
     }
 
     public function checklistProjects(): HasMany
@@ -35,8 +29,8 @@ class Project extends Model
         return $this->hasMany(ChecklistProject::class);
     }
 
-//    public function checklistTemplates(): BelongsToMany
+//    public function projects(): BelongsToMany
 //    {
-//        return $this->belongsToMany(ChecklistTemplate::class)->withPivot('question_checked', 'comment');;
+//        return $this->belongsToMany(Project::class)->withPivot('question_checked', 'comment');;
 //    }
 }

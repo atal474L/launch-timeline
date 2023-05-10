@@ -24,6 +24,10 @@ return new class extends Migration
                 ->restrictOnUpdate()
                 ->restrictOnDelete();
 
+            $table->foreignId('phase_id')->constrained()
+                ->restrictOnUpdate()
+                ->restrictOnDelete();
+
             $table->boolean('question_checked');
             $table->string('comment');
 

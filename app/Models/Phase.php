@@ -4,20 +4,41 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Phase extends Model
 {
     use HasFactory;
 
-    public function projects(): BelongsTo
+    protected $fillable = [
+        'name',
+    ];
+
+    public function projects(): BelongsToMany
     {
-        $this->belongsTo(Project::class);
+        return $this->belongsToMany(Project::class)->withPivot('deadline', 'active');
     }
 
-    public function checklists(): HasMany
+    public function checklistTemplates(): HasMany
     {
-        $this->hasMany(Checklist::class);
+        return $this->hasMany(ChecklistTemplate::class);
     }
+
+    public function projectChecklists(): HasManyThrough
+    {
+        return $this->hasManyThrough(ChecklistProject::class, ChecklistTemplate::class);
+    }
+
+    public function chosenChecklist(): HasMany
+    {
+        return $this->hasMany(ChecklistProject::class);
+    }
+//
+//    public function posts(): HasManyThrough
+//    {
+//        return $this->hasManyThrough(Post::class, SocialMediaAccount::class);
+//    }
+
 }

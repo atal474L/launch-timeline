@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('projectoverview', [\App\Http\Controllers\ProjectController::class, 'getProjectOverview']);
+Route::get('homeproject', [\App\Http\Controllers\ProjectController::class, 'getHomeProject']);
+
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
