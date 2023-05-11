@@ -15,7 +15,8 @@ class ChecklistProject extends Model
         'question_checked',
         'comment',
         'checklist_template_id',
-        'phase_id'
+        'phase_id',
+        'project_id'
     ];
 
     public function project(): BelongsTo

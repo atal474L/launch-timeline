@@ -86,50 +86,107 @@ class ProjectController extends Controller
 
         Project::findorfail($project->id)->checklistProjects()->createMany($attributes);
 
-        return response()->json(['message' => 'The project has been created'], 201);
-
+        //return response()->json(['message' => 'The project has been created'], 201);
+        return $this->respondOk('The project has been created');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function getProjectChecklistTemplate(Project $project)
     {
-        //
+        $groupedData = $this->groupChecksByPhase($project->id);
+
+        $transformedData = $groupedData->map(function ($items, $phaseId) {
+            return [
+                'phase_id' => $phaseId,
+                'items' => $items->map(function ($item) {
+                    return [
+                        'id' => $item['id'],
+                        'checklist_template_id' => $item['checklist_template_id'],
+                        'phase_id' => $item['phase_id'],
+                        'question' => $item['checklist_template']['question'],
+                    ];
+                })->toArray(),
+            ];
+        })->values()->toArray();
+
+        return $this->respondWithSuccess($transformedData);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function configureProjectChecklistTemplate(Project $project, Request $request)
     {
-        //
+        Project::findorfail($project->id)->checklistProjects()->delete();
+
+        Project::findorfail($project->id)->checklistProjects()->createMany($request->data);
+
+        return $this->respondOk('The project checklist has been configured');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    public function projectTimeline(Project $project)
+    {
+        $data = Project::with('phases', 'user')->findOrFail($project->id);
+
+        return $this->respondWithSuccess($data);
+    }
+
+    public function projectDetails(Project $project)
+    {
+        $groupedData = $this->groupChecksByPhase($project->id);
+        $transformedData = $groupedData->map(function ($items, $phaseId) {
+            return [
+                'phase_id' => $phaseId,
+                'items' => $items->map(function ($item) {
+                    return [
+                        'id' => $item['id'],
+                        'question_checked' => $item['question_checked'],
+                        'comment' => $item['comment'],
+                        'phase_id' => $item['phase_id'],
+                        'question' => $item['checklist_template']['question'],
+                    ];
+                })->toArray(),
+            ];
+        })->values()->toArray();
+
+        return $this->respondWithSuccess($transformedData);
+    }
+
+    private function groupChecksByPhase($projectId)
+    {
+        $response = Project::findorfail($projectId)->checklistProjects()->with(['checklistTemplate'])
+            ->get();
+
+        $data = json_decode($response, true);
+        return $groupedData = collect($data)->groupBy('phase_id');
+    }
+
+    public function getProjectPhases(Project $project)
+    {
+        $response = Project::with('checklistProjects.phase')->where('id', '=', $project->id)->get();
+
+        $data = json_decode($response, true);
+        $grouped_checklist_projects = collect($data[0]['checklist_projects'])
+            ->groupBy('phase_id')
+            ->toArray();
+
+        foreach ($grouped_checklist_projects as $key => $data){
+            $grouped_checklist_projects[$key]['total_checks'] = count($data);
+            $checked = 0;
+            foreach ($data as $phase){
+                if ($phase['question_checked'] == 1){
+                    $checked++;
+                }
+            }
+            $grouped_checklist_projects[$key]['checked'] = $checked;
+            $grouped_checklist_projects[$key]['progress'] = (($checked / $grouped_checklist_projects[$key]['total_checks']) * 100);
+
+        }
+
+        return $this->respondWithSuccess($grouped_checklist_projects);
+    }
+
     public function update(Request $request, $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         //
