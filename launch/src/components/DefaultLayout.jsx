@@ -26,10 +26,6 @@ export default function DefaultLayout() {
           </Navbar.Brand>
           <Navbar.Toggle />
           <Navbar.Collapse className="justify-content-end">
-            {/* <Navbar.Text>
-              Signed in as: <a href="#login">Mark Otto</a>
-            </Navbar.Text> */}
-
             <NavLink
               to="/"
               className={({ isActive }) =>
@@ -47,13 +43,13 @@ export default function DefaultLayout() {
               Projecten
             </NavLink>
 
-            <NavLink
+            {/* <NavLink
               to="#"
               className={"nav-links"}
               onClick={(event) => logout(event)}
             >
               Uitloggen {currentUser.name}
-            </NavLink>
+            </NavLink> */}
           </Navbar.Collapse>
         </Container>
       </Navbar>

@@ -1,34 +1,61 @@
-import { Container, Stack } from "react-bootstrap";
-import React, { useState } from "react";
+import { Button, Container, Stack } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
 import Timeline from "../components/Timeline";
+import Countdown from "../components/Countdown";
+import { Link } from "react-router-dom";
 
 function Home() {
-  const phaseLables = ["Step 1", "Step 2", "Step 3", "Step 4", "Step 5"];
-  const phaseDeadlines = [
-    "05-02-2023",
-    "10-02-2023",
-    "05-09-2023",
-    "05-08-2023",
-    "05-12-2023",
-  ];
-  const [currentPhase, updateCurrentPhase] = useState(3);
+  const [deadlineDate, setDeadlineDate] = useState("");
+
+  const [todaysProject, setTodaysProject] = useState([]);
+  const [activePhaseId, setActivePhaseId] = useState("");
+
+  useEffect(() => {
+    fetch("http://localhost:8000/api/homeproject")
+      .then((respone) => respone.json())
+      .then((data) => {
+        setTodaysProject(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    const activePhase = todaysProject.find((phase) => phase.active === 1);
+    setActivePhaseId(activePhase ? activePhase.phase_id : "");
+    setDeadlineDate(activePhase ? activePhase.deadline : "");
+    //console.log(deadlineDate);
+  }, [todaysProject]);
 
   return (
     <>
       <Container>
-        <Stack direction="horizontal">
+        <Stack direction="horizontal" className="home">
           <h1>Launch timeline</h1>
-          <div className="ms-auto">vla vla</div>
+
+          <div className="ms-auto deadline">
+            <span>Volgende deadline binnen: </span>
+            <Countdown date={deadlineDate}></Countdown>
+          </div>
         </Stack>
       </Container>
-
-      <div className="timeline">
-        <Timeline
-          phaseDeadlines={phaseDeadlines}
-          phaseLables={phaseLables}
-          currentPhase={currentPhase}
-        ></Timeline>
-        <p>Selected Step: {currentPhase}</p>
+      <div className="container timelineBg">
+        {/* <h3>{todaysProject ?? todaysProject[0].name}</h3> */}
+        <h3>{todaysProject ? todaysProject[0]?.name : null}</h3>
+        <div className="timeline">
+          {todaysProject && <Timeline project={todaysProject}></Timeline>}
+          <div className="d-flex justify-content-end timelineBtn">
+            <Link
+              to={`/api/project/${
+                todaysProject ? todaysProject[0]?.project_id : null
+              }/${activePhaseId}`}
+              className="btn btn-primary primaryBtnLink"
+            >
+              Start met checklist
+            </Link>
+          </div>
+        </div>
       </div>
     </>
   );

@@ -1,17 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Stack } from "react-bootstrap";
 
-export default function Countdown({ date1 }) {
-  const date = new Date("2023-05-04");
-  const [time, setTime] = useState(getTimeUntil(date));
+export default function Countdown(props) {
+  const date = new Date(props.date);
+
+  const [time, setTime] = useState(getTimeUntil(new Date(date)));
 
   const timer = useRef();
 
   useEffect(() => {
     timer.current = setInterval(() => {
       setTime(getTimeUntil(date));
-      console.log(time);
     }, 1000);
+    //console.log(props.date);
     return () => clearInterval(timer.current);
   }, [date]);
 

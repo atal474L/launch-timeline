@@ -1,8 +1,7 @@
-/* html body {
-    background-color: #f8f7fc;
-    font-family: "Roboto", sans-serif;
-    font-size: 65.5%;
-  } 
+html body {
+  font-family: "Roboto", sans-serif;
+} 
+  /*
   font-family: 'Roboto', sans-serif;
   font-family: 'Roboto Condensed', sans-serif;
 */
@@ -11,6 +10,23 @@
     padding: 0;
     box-sizing: border-box;
   }
+
+.primaryBtnLink{
+  background-color: #037272;
+  color: white;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 1em;
+  border-color: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.primaryBtnLink:hover {
+  border: 1px solid #037272;
+  background-color: transparent;
+  color: #037272;
+  position: static;
+  z-index: 10;
+}
 
 .navbar-brand{
     color: #1E2F31;
@@ -30,6 +46,7 @@ a.nav-links{
     color: #1E2F31;
     font-family: 'Roboto Condensed', sans-serif;
     position: relative;
+    
 }
 /* a.nav-links:hover{
     color: #037272;
@@ -86,67 +103,125 @@ a.nav-links:hover::after {
 
 
 /*Timeline*/  
-  .timeline {
-    width: 80%;
-    margin-left: 15%;
-  }
-  .stepWrapper {
-    display: flex;
-    margin-bottom: 4em;
-  }
-  .stepBlock{
-    width: 100%;
-  }
-  .stepBlock .circleWrapper {
-    position: relative;
-    
-  }
-
-  .stepBlock:not(:last-child) > .circleWrapper::after {
-    content: '';
-    width: 100%;
-    background-color: #037272;
-    height: 3px;
-    position: absolute;
-    top: 0px;
-    bottom: 0px;
-    margin: auto;
-    z-index: -1;
-  }
-  .stepBlock:not(:last-child).activated > .circleWrapper::after, .stepBlock:not(:last-child).activated ~ .stepBlock:not(:last-child) > .circleWrapper::after {
-    height: 2px;
-    background-color: #5C6174;
-    opacity: 0.6;
-  }
-
-  .circle { 
-    background-color: #f8f8f8;
-    border: 2px solid #037272;
-    border-radius: 50%;
-    width: 1em;
-    height: 1em;
-    -moz-background-clip: padding-box;
-    -webkit-background-clip: padding-box;
-    background-clip: padding-box;
-  }
-  .activated .circle {
-    background-color: #037272;
-    border-color: transparent;
-    transform: scale(2);
-  }
+.timelineBg{
+  background-color: #f8f8f8;
+  position: relative;
+  /* z-index: -2; */
+  z-index: 1;
+  padding: 0 0 1% 0;
+  border-radius: 1.1em;
+}
+.timeline {
+  width: 100%;
+  margin-left: 7%;
   
-  span{
-    font-family: 'Roboto Condensed', sans-serif;
-    font-weight: 700;
-    font-size: 1em;
-    color: #5C6174;
-  }
+}
 
-  .activated span {
-    color: #037272;
-    font-size: 2em;
-  }
+.timelineBg h3{
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 2em;
+  color: #1E2F31;
+  padding: 2% 0 5% 2%;
+  text-transform: capitalize;
+}
+.stepWrapper {
+  display: flex;
+  margin-bottom: 4em;
+}
+.stepBlock{
+  width: 100%;
+}
+.stepBlock .circleWrapper {
+  position: relative;
+  
+}
 
+.stepBlock:not(:last-child) > .circleWrapper::after {
+  content: '';
+  width: 100%;
+  background-color: #037272;
+  height: 3px;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  margin: auto;
+  z-index: -1;
+}
+.stepBlock:not(:last-child).activated > .circleWrapper::after, .stepBlock:not(:last-child).activated ~ .stepBlock:not(:last-child) > .circleWrapper::after {
+  height: 2px;
+  background-color: #5C6174;
+  opacity: 0.6;
+}
+
+.circle { 
+  background-color: #f8f8f8;
+  border: 2px solid #037272;
+  border-radius: 50%;
+  width: 1em;
+  height: 1em;
+  -moz-background-clip: padding-box;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+.activated .circle {
+  background-color: #037272;
+  border-color: transparent;
+  transform: scale(2);
+}
+
+.stepBlock span{
+  font-family: 'Roboto Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1em;
+  color: #5C6174;
+  display: block;
+  margin-top: 5%;
+}
+.stepBlock p{
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 1.2em;
+  color: #5C6174;
+  margin-bottom: 10%;
+}
+
+.activated span {
+  color: #037272;
+  font-size: 2em;
+}
+.activated p{
+  color: #037272;
+  font-size: 1.5em;
+  line-height: 1.2em;
+}
+
+.timeline .primaryBtnLink{
+  margin-left: auto;
+}
+.timelineBtn{
+  margin-right: 15%;
+}
+
+/* home page */
+
+.home {
+  margin-top: 5em;
+  margin-bottom: 5em;
+}
+.home h1{
+  color: #1E2F31;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 2.5em;
+}
+.home .deadline{
+  display: flex;
+  align-items: center;
+}
+.home .deadline span{
+  padding-right: 2em;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 1.2em;
+}
 
 
   

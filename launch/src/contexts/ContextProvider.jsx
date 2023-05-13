@@ -10,10 +10,10 @@ const StateContext = createContext({
 
 export const ContextProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState({
-    name: "atal",
-    email: "jjj",
+    name: "",
+    email: "",
   });
-  const [userToken, setUserToken] = useState("null");
+  const [userToken, setUserToken] = useState("hh");
 
   return (
     // de tweede {} geeft aan dat dit een object is bij value

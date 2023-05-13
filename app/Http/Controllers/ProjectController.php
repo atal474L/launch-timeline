@@ -60,8 +60,22 @@ class ProjectController extends Controller
 
         $data = Project::with('phases')->findOrFail($projectId);
 
+        $filteredData = collect(json_decode($data, true))->map(function ($item) {
+            $phases = collect($item['phases'])->map(function ($phase) use ($item) {
+                return [
+                    'name' => $item['name'],
+                    'phase_name' => $phase['phase_name'],
+                    'phase_id' => $phase['pivot']['phase_id'],
+                    'project_id' => $phase['pivot']['project_id'],
+                    'active' => $phase['pivot']['active'],
+                    'deadline' => $phase['pivot']['deadline']
+                ];
+            });
 
-        return $this->respondWithSuccess($data);
+            return $phases;
+        })->flatten(1);
+
+        return $this->respondWithSuccess($filteredData);
     }
 
 
