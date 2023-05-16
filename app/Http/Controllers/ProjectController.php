@@ -27,6 +27,7 @@ class ProjectController extends Controller
             foreach ($project['phases'] as $phase) {
                 if ($phase['pivot']['active'] === 1) {
                     $data[$key]['active_phase_id'] = $phase['pivot']['phase_id'];
+                    $data[$key]['active_phase_deadline'] = \Carbon\Carbon::createFromFormat('Y-m-d', $phase['pivot']['deadline'])->format('d/m/Y');
                 }
             }
         }

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Timeline from "../components/Timeline";
 import Countdown from "../components/Countdown";
 import { Link } from "react-router-dom";
+import ProjectTable from "../components/ProjectTable";
 
 function Home() {
   const [deadlineDate, setDeadlineDate] = useState("");
@@ -10,11 +11,33 @@ function Home() {
   const [todaysProject, setTodaysProject] = useState([]);
   const [activePhaseId, setActivePhaseId] = useState("");
 
+  const [topTenProjects, setTopTenProjects] = useState([]);
+
   useEffect(() => {
     fetch("http://localhost:8000/api/homeproject")
-      .then((respone) => respone.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        return response.json();
+      })
       .then((data) => {
         setTodaysProject(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+
+    // top 10 projecten op basis van deadline
+    fetch("http://localhost:8000/api/projectoverview")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch top ten projects");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setTopTenProjects(data);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -56,6 +79,15 @@ function Home() {
             </Link>
           </div>
         </div>
+      </div>
+
+      <div className="container homeSec2">
+        <h2>Top 10 projecten gebaseerd op eerstvolgende deadlines</h2>
+        <Container className="homeTable">
+          {topTenProjects && (
+            <ProjectTable projects={topTenProjects}></ProjectTable>
+          )}
+        </Container>
       </div>
     </>
   );
