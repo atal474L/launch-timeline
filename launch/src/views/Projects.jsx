@@ -6,6 +6,8 @@ import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { FilterMatchMode } from "primereact/api";
 import { Dropdown } from "primereact/dropdown";
+import "primeicons/primeicons.css";
+import ProgressBar from "react-bootstrap/ProgressBar";
 
 //theme
 import "primereact/resources/themes/lara-light-indigo/theme.css";
@@ -15,8 +17,8 @@ import "primereact/resources/primereact.min.css";
 export default function Projects() {
   const [projects, setProjects] = useState([]);
   const [phaseNameOptions, setPhaseNameOptions] = useState([
-    "Post CMS training",
-    "Pre Pre-launch",
+    "CMS training",
+    "Pre Pre launch",
     "Pre-launch",
     "Post launch",
     "Offboarding",
@@ -41,7 +43,6 @@ export default function Projects() {
         matchMode: FilterMatchMode.CONTAINS,
       },
     });
-    debugger;
   };
 
   useEffect(() => {
@@ -82,62 +83,75 @@ export default function Projects() {
         {/* <Container className="homeTable">
           
         </Container> */}
-        <InputText onInput={setGlobalFilters}></InputText>
-        <Dropdown
-          value={selectedPhaseName}
-          options={phaseNameOptions}
-          onChange={onPhaseNameFilterChange}
-          placeholder="Select Phase Name"
-          className="p-column-filter"
-          showClear
-        />
-        <DataTable
-          value={projects}
-          paginator
-          rows={3}
-          rowsPerPageOptions={[5, 10, 25, 50]}
-          className="table"
-          filters={filters}
-        >
-          <Column field="name" header="Projectnaam" sortable></Column>
-          {/* <Column
+        <Stack direction="horizontal" className="project-filters">
+          <Dropdown
+            value={selectedPhaseName}
+            options={phaseNameOptions}
+            onChange={onPhaseNameFilterChange}
+            placeholder="Filter fase op:"
+            className="p-column-filter"
+            showClear
+          />
+
+          <div className="ms-auto deadline">
+            <span className="p-input-icon-left">
+              <i className="pi pi-search" />
+              <InputText
+                onInput={setGlobalFilters}
+                placeholder="Zoeken..."
+                className="ms-auto deadline srch"
+              ></InputText>
+            </span>
+          </div>
+        </Stack>
+
+        <div className="projectTable">
+          <DataTable
+            value={projects}
+            paginator
+            rows={3}
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            id="custom-table"
+            filters={filters}
+          >
+            <Column field="name" header="Projectnaam" sortable></Column>
+            {/* <Column
             field={(rowData) => rowData?.phases[0]?.phase_name}
             header="Actieve fase"
           /> */}
 
-          <Column
-            field={(rowData) => rowData?.phases[0]?.phase_name}
-            header="Phase Name"
-            filter
-            filterElement={
-              <Dropdown
-                value={selectedPhaseName}
-                options={phaseNameOptions}
-                onChange={onPhaseNameFilterChange}
-                placeholder="Select Phase Name"
-                className="p-column-filter"
-                showClear
-              />
-            }
-          />
-          <Column
-            field="active_phase_deadline"
-            header="Fasedeadline"
-            sortable
-          ></Column>
-          <Column field="progress" header="Progressie"></Column>
-          <Column field="state" header="Project status" sortable></Column>
-          <Column
-            body={(rowData) => (
-              <Link
-                to={`api/projects/${rowData?.id}/details`}
-                className="primaryLink"
-              >
-                Project bekijken
-              </Link>
-            )}
-          />
-        </DataTable>
+            <Column
+              field={(rowData) => rowData?.phases[0]?.phase_name}
+              header="Phase Name"
+              showFilterMenu={false}
+              filter
+            />
+            <Column
+              field="active_phase_deadline"
+              header="Fasedeadline"
+              sortable
+            ></Column>
+            {/* <Column field="progress" header="Progressie" ></Column> */}
+            <Column
+              header="Progressie"
+              body={(rowData) => (
+                <ProgressBar
+                  now={rowData.progress}
+                  label={`${rowData.progress}%`}
+                  variant="success"
+                />
+              )}
+            />
+            <Column field="state" header="Project status" sortable></Column>
+            <Column
+              body={(rowData) => (
+                <Link to={`${rowData?.id}/details`} className="primaryLink">
+                  Project bekijken
+                </Link>
+              )}
+            />
+          </DataTable>
+        </div>
       </div>
     </>
   );

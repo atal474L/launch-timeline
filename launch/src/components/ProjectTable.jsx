@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Table from "react-bootstrap/Table";
 import { Link } from "react-router-dom";
+import ProgressBar from "react-bootstrap/ProgressBar";
 
 export default function ProjectTable(props) {
   const [data, setData] = useState(props.projects);
@@ -49,7 +50,13 @@ export default function ProjectTable(props) {
                 <td>{project.name}</td>
                 <td>{project?.phases[0]?.phase_name}</td>
                 <td>{project?.active_phase_deadline}</td>
-                <td>{project?.progress}</td>
+                <td>
+                  <ProgressBar
+                    now={project?.progress}
+                    label={`${project?.progress}%`}
+                    variant="success"
+                  />
+                </td>
                 <td>{project?.state}</td>
                 <td>
                   <Link
