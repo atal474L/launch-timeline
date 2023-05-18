@@ -52,7 +52,6 @@ class ProjectController extends Controller
 
     public function getHomeProject()
     {
-
         $projectId = Project::join('phase_project', 'projects.id', '=', 'phase_project.project_id')
             ->join('phases', 'phase_project.phase_id', '=', 'phases.id')
             ->where('phase_project.active', '=', 1)
@@ -69,7 +68,7 @@ class ProjectController extends Controller
                     'phase_id' => $phase['pivot']['phase_id'],
                     'project_id' => $phase['pivot']['project_id'],
                     'active' => $phase['pivot']['active'],
-                    'deadline' => $phase['pivot']['deadline']
+                    'deadline' => $phase['pivot']['deadline']= \Carbon\Carbon::createFromFormat('Y-m-d', $phase['pivot']['deadline'])->format('d/m/Y')
                 ];
             });
 
@@ -137,9 +136,28 @@ class ProjectController extends Controller
 
     public function projectTimeline(Project $project)
     {
-        $data = Project::with('phases', 'user')->findOrFail($project->id);
+        //$findProject = Project::findOrFail($project->id)->makeHidden(['name', 'state', 'deadline', 'created_at', 'updated_at', 'deleted_at', 'user_id']);
 
-        return $this->respondWithSuccess($data);
+        $data = Project::with('phases', 'user')->findOrFail(['id'=> $project->id]);
+
+        $filteredData = collect(json_decode($data, true))->map(function ($item) {
+            $phases = collect($item['phases'])->map(function ($phase) use ($item) {
+                return [
+                    'user_name' => $item['user']['name'],
+                    'name' => $item['name'],
+                    'project_deadline' => $item['deadline']= \Carbon\Carbon::createFromFormat('Y-m-d', $item['deadline'])->format('d/m/Y'),
+                    'phase_name' => $phase['phase_name'],
+                    'phase_id' => $phase['pivot']['phase_id'],
+                    'project_id' => $phase['pivot']['project_id'],
+                    'active' => $phase['pivot']['active'],
+                    'deadline' => $phase['pivot']['deadline']= \Carbon\Carbon::createFromFormat('Y-m-d', $phase['pivot']['deadline'])->format('d/m/Y')
+                ];
+            });
+
+            return $phases;
+        })->flatten(1);
+
+        return $this->respondWithSuccess($filteredData);
     }
 
     public function projectDetails(Project $project)

@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { Stack } from "react-bootstrap";
 
 export default function Countdown(props) {
-  const date = new Date(props.date);
+  const [day, month, year] = props.date.split("/").map(Number);
+  const date = new Date(year, month - 1, day);
+  //const date = new Date(props.date);
 
   const [time, setTime] = useState(getTimeUntil(new Date(date)));
 
@@ -54,22 +56,26 @@ export default function Countdown(props) {
 
   return (
     <div>
-      <Stack direction="horizontal" className="countdown" gap={3}>
-        <div>
-          <div className="digits">{format(time).split(":")[0]}</div>
-          <p>Dagen</p>
-        </div>
-        <div className="vr" />
-        <div>
-          <div className="digits">{format(time).split(":")[1]}</div>
-          <p className="">Uren</p>
-        </div>
-        <div className="vr" />
-        <div>
-          <div className="digits">{format(time).split(":")[2]}</div>
-          <p>Minuten</p>
-        </div>
-      </Stack>
+      {format(time).split(":")[0] != "NaN" ? (
+        <Stack direction="horizontal" className="countdown" gap={3}>
+          <div>
+            <div className="digits">{format(time).split(":")[0]}</div>
+            <p>Dagen</p>
+          </div>
+          <div className="vr" />
+          <div>
+            <div className="digits">{format(time).split(":")[1]}</div>
+            <p className="">Uren</p>
+          </div>
+          <div className="vr" />
+          <div>
+            <div className="digits">{format(time).split(":")[2]}</div>
+            <p>Minuten</p>
+          </div>
+        </Stack>
+      ) : (
+        "Calculating..."
+      )}
 
       {/* <div>hour: {format(time).split(":")[1]}</div>
       <div>minutes: {format(time).split(":")[2]}</div> */}

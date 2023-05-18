@@ -71,7 +71,7 @@ export default function ProjectTable(props) {
           )
         ) : (
           <tr>
-            <td colSpan={6}>No projects available</td>
+            <td colSpan={6}>Geen projecten gevonden</td>
           </tr>
         )}
       </tbody>

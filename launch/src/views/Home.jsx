@@ -83,11 +83,11 @@ function Home() {
 
       <div className="container homeSec2">
         <h2>Top 10 projecten gebaseerd op eerstvolgende deadlines</h2>
-        <Container className="homeTable">
+        <div className="homeTable">
           {topTenProjects && (
             <ProjectTable projects={topTenProjects}></ProjectTable>
           )}
-        </Container>
+        </div>
       </div>
     </>
   );
