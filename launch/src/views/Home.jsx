@@ -29,7 +29,7 @@ function Home() {
       });
 
     // top 10 projecten op basis van deadline
-    fetch("http://localhost:8000/api/projectoverview")
+    fetch("http://localhost:8000/api/toptenprojects")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch top ten projects");

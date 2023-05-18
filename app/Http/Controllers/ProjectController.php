@@ -21,6 +21,20 @@ class ProjectController extends Controller
         $response = Project::with(['checklistProjects', 'phases'=> fn($q) => $q->where('phase_project.active', '=', 1 )])
             ->get();
 
+        return $this->filterDataForProjectTable($response);
+    }
+    public function getTopTenProjects()
+    {
+        $response = Project::with(['checklistProjects', 'phases'=> fn($q) => $q->where('phase_project.active', '=', 1 )])
+            ->orderBy('deadline')
+            ->take(10)
+            ->get();
+
+        return $this->filterDataForProjectTable($response);
+    }
+
+    private function filterDataForProjectTable($response)
+    {
         $data = json_decode($response, true);
 
         foreach ($data as $key => $project) {
@@ -45,7 +59,6 @@ class ProjectController extends Controller
             }
             $data[$key]['progress'] = (($checked / $activeChecks * 10000)/100);
         }
-
         return $this->respondWithSuccess($data);
     }
 

@@ -14,8 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('projectoverview', [\App\Http\Controllers\ProjectController::class, 'getProjectOverview']);
+
 Route::get('homeproject', [\App\Http\Controllers\ProjectController::class, 'getHomeProject']);
+Route::get('toptenprojects', [\App\Http\Controllers\ProjectController::class, 'getTopTenProjects']);
+
+Route::get('projectoverview', [\App\Http\Controllers\ProjectController::class, 'getProjectOverview']);
 
 Route::post('projects', [\App\Http\Controllers\ProjectController::class, 'storeProject']);
 Route::get('project/checklist/template/{project}', [\App\Http\Controllers\ProjectController::class, 'getProjectChecklistTemplate']);

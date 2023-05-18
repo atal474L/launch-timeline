@@ -36,7 +36,7 @@ export default function ProjectTable(props) {
         <tr>
           <th onClick={() => sorting("name")}>Projectnaam</th>
           <th>Actieve fase</th>
-          <th>Fasedeadline</th>
+          <th>Fase deadline</th>
           <th>Progressie</th>
           <th>Projectstatus</th>
           <th></th>
