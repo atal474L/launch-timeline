@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ChecklistTemplate;
 use App\Models\Phase;
 use App\Models\Project;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use F9Web\ApiResponseHelpers;
 use Illuminate\Http\JsonResponse;
@@ -23,44 +24,88 @@ class ProjectController extends Controller
 
         return $this->filterDataForProjectTable($response);
     }
+
+
     public function getTopTenProjects()
     {
-        $response = Project::with(['checklistProjects', 'phases'=> fn($q) => $q->where('phase_project.active', '=', 1 )])
+        $projects = Project::with(['checklistProjects', 'phases'])
             ->orderBy('deadline')
             ->take(10)
             ->get();
 
-        return $this->filterDataForProjectTable($response);
+        $filteredData = $this->filterDataForProjectTable($projects);
+
+        return $this->respondWithSuccess($filteredData);
     }
 
-    private function filterDataForProjectTable($response)
+
+    private function filterDataForProjectTable($projects)
     {
-        $data = json_decode($response, true);
+        return $projects->map(function ($project) {
+            $activePhase = $project->phases->first(function ($phase) {
+                return $phase->pivot->active === 1;
+            });
 
-        foreach ($data as $key => $project) {
-            foreach ($project['phases'] as $phase) {
-                if ($phase['pivot']['active'] === 1) {
-                    $data[$key]['active_phase_id'] = $phase['pivot']['phase_id'];
-                    $data[$key]['active_phase_deadline'] = \Carbon\Carbon::createFromFormat('Y-m-d', $phase['pivot']['deadline'])->format('d/m/Y');
-                }
-            }
-        }
+            $activePhaseId = optional($activePhase)->pivot->phase_id;
+            $activePhaseDeadline = optional($activePhase)->pivot->deadline;
 
-        foreach ($data as $key => $project){
-            $activeChecks = 0;
-            $checked = 0;
-            foreach ($project['checklist_projects'] as $checklist){
-                if ((array_key_exists('active_phase_id', $project)) && $checklist['phase_id'] == $project['active_phase_id']){
-                    $activeChecks++;
-                    if ($checklist['question_checked'] == 1){
-                        $checked++;
-                    }
-                }
-            }
-            $data[$key]['progress'] = (($checked / $activeChecks * 10000)/100);
-        }
-        return $this->respondWithSuccess($data);
+            $project->active_phase_id = $activePhaseId;
+            $project->active_phase_deadline = $activePhaseDeadline ? Carbon::createFromFormat('Y-m-d', $activePhaseDeadline)->format('d/m/Y') : null;
+
+            $activeChecks = $project->checklistProjects->where('phase_id', $activePhaseId)->count();
+            $checked = $project->checklistProjects->where('phase_id', $activePhaseId)->where('question_checked', 1)->count();
+
+            $project->progress = $activeChecks > 0 ? ($checked / $activeChecks) * 100 : 0;
+
+            return $project;
+        });
     }
+
+
+
+
+
+
+
+
+//    public function getTopTenProjects()
+//    {
+//        $response = Project::with(['checklistProjects', 'phases'=> fn($q) => $q->where('phase_project.active', '=', 1 )])
+//            ->orderBy('deadline')
+//            ->take(10)
+//            ->get();
+//
+//        return $this->filterDataForProjectTable($response);
+//    }
+//
+//    private function filterDataForProjectTable($response)
+//    {
+//        $data = json_decode($response, true);
+//
+//        foreach ($data as $key => $project) {
+//            foreach ($project['phases'] as $phase) {
+//                if ($phase['pivot']['active'] === 1) {
+//                    $data[$key]['active_phase_id'] = $phase['pivot']['phase_id'];
+//                    $data[$key]['active_phase_deadline'] = \Carbon\Carbon::createFromFormat('Y-m-d', $phase['pivot']['deadline'])->format('d/m/Y');
+//                }
+//            }
+//        }
+//
+//        foreach ($data as $key => $project){
+//            $activeChecks = 0;
+//            $checked = 0;
+//            foreach ($project['checklist_projects'] as $checklist){
+//                if ((array_key_exists('active_phase_id', $project)) && $checklist['phase_id'] == $project['active_phase_id']){
+//                    $activeChecks++;
+//                    if ($checklist['question_checked'] == 1){
+//                        $checked++;
+//                    }
+//                }
+//            }
+//            $data[$key]['progress'] = (($checked / $activeChecks * 10000)/100);
+//        }
+//        return $this->respondWithSuccess($data);
+//    }
 
 
     public function getHomeProject()

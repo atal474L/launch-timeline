@@ -19,10 +19,10 @@ return new class extends Migration
             $table->string('name');
             $table->enum('state', ['active', 'inactive']);
             $table->date('deadline');
-//            $table->integer('active_phase_id');
+
             $table->foreignId('user_id')->constrained()
-                ->restrictOnUpdate()
-                ->restrictOnDelete();
+                ->cascadeOnUpdate()
+                ->nullOnDelete();
 
             $table->timestamps();
             $table->softDeletes();
