@@ -15,6 +15,7 @@ import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 
 export default function Projects() {
+  const baseUrl = import.meta.env.VITE_BASE_URL;
   const [projects, setProjects] = useState([]);
   const [phaseNameOptions, setPhaseNameOptions] = useState([
     "CMS training",
@@ -46,7 +47,7 @@ export default function Projects() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/projectoverview")
+    fetch(baseUrl + "api/projectoverview")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch the projects");
@@ -67,12 +68,7 @@ export default function Projects() {
           <h1>Projecten overzicht</h1>
 
           <div className="ms-auto deadline">
-            <Link
-              // to={`/api/project/${
-              //   todaysProject ? todaysProject[0]?.project_id : null
-              // }/${activePhaseId}`}
-              className="btn btn-primary secondryBtnLink"
-            >
+            <Link to={`toevoegen`} className="btn btn-primary secondryBtnLink">
               Nieuw project aanmaken
             </Link>
           </div>

@@ -31,9 +31,12 @@ class ProjectPostRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|max:40',
+            'name' => 'required|string|max:40',
             'deadline' => 'required|date|after:today',
-            'state' => ['required', 'enum:active,inactive'],
+            'user_id' => 'required|exists:users,id',
+            'phases' => 'required|array',
+            'phases.*.phase_id' => 'required|exists:phases,id',
+            'phases.*.deadline' => 'required|date|after:today',
         ];
     }
 }

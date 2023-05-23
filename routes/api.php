@@ -29,6 +29,8 @@ Route::get('projects/{project}/details', [\App\Http\Controllers\ProjectControlle
 
 Route::get('projects/{project}/phases', [\App\Http\Controllers\ProjectController::class, 'getProjectPhases']);
 
+Route::get('teams', [\App\Http\Controllers\Controller::class, 'getTeams']);
+
 Route::get('projects/{project}/phases/{phase}/checklist', [\App\Http\Controllers\ChecklistController::class, 'getChecklist']);
 Route::put('projects/{project}/phases/{phase}/checklist', [\App\Http\Controllers\ChecklistController::class, 'editChecklist']);
 

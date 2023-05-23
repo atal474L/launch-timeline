@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProjectPostRequest;
 use App\Models\ChecklistTemplate;
 use App\Models\Phase;
 use App\Models\Project;
@@ -9,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use F9Web\ApiResponseHelpers;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Validator;
 use function League\Flysystem\type;
 use function Spatie\Ignition\Config\toArray;
 
@@ -107,6 +109,71 @@ class ProjectController extends Controller
 //        return $this->respondWithSuccess($data);
 //    }
 
+//
+//    public function projectTimeline(Project $project)
+//    {
+//        //$findProject = Project::findOrFail($project->id)->makeHidden(['name', 'state', 'deadline', 'created_at', 'updated_at', 'deleted_at', 'user_id']);
+//
+//        $data = Project::with('phases', 'user')->findOrFail(['id'=> $project->id]);
+//
+//        $filteredData = collect(json_decode($data, true))->map(function ($item) {
+//            $phases = collect($item['phases'])
+//                ->sortBy('pivot.phase_id')
+//                ->map(function ($phase) use ($item) {
+//                    return [
+//                        'user_name' => $item['user']['name'],
+//                        'name' => $item['name'],
+//                        'project_deadline' => $item['deadline']= \Carbon\Carbon::createFromFormat('Y-m-d', $item['deadline'])->format('d/m/Y'),
+//                        'phase_name' => $phase['phase_name'],
+//                        'phase_id' => $phase['pivot']['phase_id'],
+//                        'project_id' => $phase['pivot']['project_id'],
+//                        'active' => $phase['pivot']['active'],
+//                        'deadline' => $phase['pivot']['deadline']= \Carbon\Carbon::createFromFormat('Y-m-d', $phase['pivot']['deadline'])->format('d/m/Y')
+//                    ];
+//                });
+//
+//            return $phases;
+//        })->flatten(1);
+//
+//        return $this->respondWithSuccess($filteredData);
+//    }
+
+//    public function storeProject(Request $request)
+//    {
+//        $template = ChecklistTemplate::select('id', 'phase_id')->get();
+//        $attributes = $template->map(function ($item) {
+//            return [
+//                'checklist_template_id' => $item->id,
+//                'phase_id' => $item->phase_id,
+//                'question_checked' => 0,
+//                'comment' => ''
+//            ];
+//        })->all();
+//
+//
+//        $project = new Project($request->all());
+//        $project->user_id = $request->user_id;
+//        $project->save();
+//
+//        Project::findorfail($project->id)->phases()->sync($request->phases);
+//
+//        Project::findorfail($project->id)->checklistProjects()->createMany($attributes);
+//
+//        //return response()->json(['message' => 'The project has been created'], 201);
+//        return $this->respondOk('The project has been created');
+//    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     public function getHomeProject()
     {
@@ -139,28 +206,44 @@ class ProjectController extends Controller
 
     public function storeProject(Request $request)
     {
-        $template = ChecklistTemplate::select('id', 'phase_id')->get();
-        $attributes = $template->map(function ($item) {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:40',
+            'deadline' => 'required|date|after:today',
+            'user_id' => 'required|exists:users,id',
+            'phases' => 'required|array',
+            'phases.*.phase_id' => 'required|exists:phases,id',
+            'phases.*.deadline' => 'required|date|after:today',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'errors' => $validator->errors()], 422);
+        }
+
+        $checklistTemplates = ChecklistTemplate::select('id', 'phase_id')->get();
+        $checklistItems = $this->createChecklistItems($checklistTemplates);
+
+        $project = new Project($request->all());
+        $project->save();
+
+        $project->phases()->sync($request->phases);
+
+        $project->checklistProjects()->createMany($checklistItems);
+
+        return $this->respondOk('The project has been created');
+    }
+
+    private function createChecklistItems($checklistTemplates)
+    {
+        return $checklistTemplates->map(function ($template) {
             return [
-                'checklist_template_id' => $item->id,
-                'phase_id' => $item->phase_id,
+                'checklist_template_id' => $template->id,
+                'phase_id' => $template->phase_id,
                 'question_checked' => 0,
                 'comment' => ''
             ];
         })->all();
-
-
-        $project = new Project($request->all());
-        $project->user_id = $request->user_id;
-        $project->save();
-
-        Project::findorfail($project->id)->phases()->sync($request->phases);
-
-        Project::findorfail($project->id)->checklistProjects()->createMany($attributes);
-
-        //return response()->json(['message' => 'The project has been created'], 201);
-        return $this->respondOk('The project has been created');
     }
+
 
     public function getProjectChecklistTemplate(Project $project)
     {
@@ -183,6 +266,7 @@ class ProjectController extends Controller
         return $this->respondWithSuccess($transformedData);
     }
 
+
     public function configureProjectChecklistTemplate(Project $project, Request $request)
     {
         Project::findorfail($project->id)->checklistProjects()->delete();
@@ -192,31 +276,36 @@ class ProjectController extends Controller
         return $this->respondOk('The project checklist has been configured');
     }
 
+
     public function projectTimeline(Project $project)
     {
-        //$findProject = Project::findOrFail($project->id)->makeHidden(['name', 'state', 'deadline', 'created_at', 'updated_at', 'deleted_at', 'user_id']);
+        $projectData = Project::with('phases', 'user')->findOrFail(['id' => $project->id]);
 
-        $data = Project::with('phases', 'user')->findOrFail(['id'=> $project->id]);
-
-        $filteredData = collect(json_decode($data, true))->map(function ($item) {
-            $phases = collect($item['phases'])->map(function ($phase) use ($item) {
-                return [
-                    'user_name' => $item['user']['name'],
-                    'name' => $item['name'],
-                    'project_deadline' => $item['deadline']= \Carbon\Carbon::createFromFormat('Y-m-d', $item['deadline'])->format('d/m/Y'),
-                    'phase_name' => $phase['phase_name'],
-                    'phase_id' => $phase['pivot']['phase_id'],
-                    'project_id' => $phase['pivot']['project_id'],
-                    'active' => $phase['pivot']['active'],
-                    'deadline' => $phase['pivot']['deadline']= \Carbon\Carbon::createFromFormat('Y-m-d', $phase['pivot']['deadline'])->format('d/m/Y')
-                ];
-            });
-
-            return $phases;
+        $filteredData = collect(json_decode($projectData, true))->map(function ($item) {
+            return $this->mapPhases($item);
         })->flatten(1);
 
         return $this->respondWithSuccess($filteredData);
     }
+
+    private function mapPhases($item)
+    {
+        return collect($item['phases'])
+            ->sortBy('pivot.phase_id')
+            ->map(function ($phase) use ($item) {
+                return [
+                    'user_name' => $item['user']['name'],
+                    'name' => $item['name'],
+                    'project_deadline' => \Carbon\Carbon::createFromFormat('Y-m-d', $item['deadline'])->format('d/m/Y'),
+                    'phase_name' => $phase['phase_name'],
+                    'phase_id' => $phase['pivot']['phase_id'],
+                    'project_id' => $phase['pivot']['project_id'],
+                    'active' => $phase['pivot']['active'],
+                    'deadline' => \Carbon\Carbon::createFromFormat('Y-m-d', $phase['pivot']['deadline'])->format('d/m/Y')
+                ];
+            });
+    }
+
 
     public function projectDetails(Project $project)
     {
