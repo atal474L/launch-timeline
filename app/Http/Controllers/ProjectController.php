@@ -163,7 +163,35 @@ class ProjectController extends Controller
 //        return $this->respondOk('The project has been created');
 //    }
 
+//    public function getProjectChecklistTemplate(Project $project)
+//    {
+//        $groupedData = $this->groupChecksByPhase($project->id);
+//
+//        $transformedData = $groupedData->map(function ($items, $phaseId) {
+//            return [
+//                'phase_id' => $phaseId,
+//                'items' => $items->map(function ($item) {
+//                    return [
+//                        'id' => $item['id'],
+//                        'checklist_template_id' => $item['checklist_template_id'],
+//                        'phase_id' => $item['phase_id'],
+//                        'question' => $item['checklist_template']['question'],
+//                    ];
+//                })->toArray(),
+//            ];
+//        })->values()->toArray();
+//
+//        return $this->respondWithSuccess($transformedData);
+//    }
 
+//    public function configureProjectChecklistTemplate(Project $project, Request $request)
+//    {
+//        Project::findorfail($project->id)->checklistProjects()->delete();
+//
+//        Project::findorfail($project->id)->checklistProjects()->createMany($request->data);
+//
+//        return $this->respondOk('The project checklist has been configured');
+//    }
 
 
 
@@ -247,31 +275,49 @@ class ProjectController extends Controller
 
     public function getProjectChecklistTemplate(Project $project)
     {
-        $groupedData = $this->groupChecksByPhase($project->id);
+        $groupedChecksByPhase = $this->groupChecksByPhase($project->id);
 
-        $transformedData = $groupedData->map(function ($items, $phaseId) {
+        $transformedData = $groupedChecksByPhase->map(function ($items, $phaseId) {
             return [
                 'phase_id' => $phaseId,
-                'items' => $items->map(function ($item) {
-                    return [
-                        'id' => $item['id'],
-                        'checklist_template_id' => $item['checklist_template_id'],
-                        'phase_id' => $item['phase_id'],
-                        'question' => $item['checklist_template']['question'],
-                    ];
-                })->toArray(),
+                'items' => $this->transformChecklistItems($items),
             ];
         })->values()->toArray();
 
         return $this->respondWithSuccess($transformedData);
     }
 
+    private function transformChecklistItems($items)
+    {
+        return $items->map(function ($item) {
+            return [
+                'id' => $item['id'],
+                'checklist_template_id' => $item['checklist_template_id'],
+                'phase_id' => $item['phase_id'],
+                'question' => $item['checklist_template']['question'],
+            ];
+        })->toArray();
+    }
+
 
     public function configureProjectChecklistTemplate(Project $project, Request $request)
     {
-        Project::findorfail($project->id)->checklistProjects()->delete();
+        $validator = Validator::make($request->all(), [
+            'data' => 'required|array',
+            'data.*.checklist_template_id' => 'required|exists:checklist_templates,id',
+            'data.*.phase_id' => 'required|exists:phases,id',
+            'data.*.question_checked' => 'required|boolean',
+            'data.*.comment' => 'nullable|string|max:255',
+        ]);
 
-        Project::findorfail($project->id)->checklistProjects()->createMany($request->data);
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'errors' => $validator->errors()], 422);
+        }
+
+        $checklistData = $request->input('data');
+
+        $project->checklistProjects()->delete();
+        $project->checklistProjects()->createMany($checklistData);
 
         return $this->respondOk('The project checklist has been configured');
     }

@@ -35,6 +35,7 @@ function CreateProject() {
     phase5Deadline: "",
   });
   const [errors, setErrors] = useState({});
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     getTeams();
@@ -130,14 +131,23 @@ function CreateProject() {
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
     } else {
-      console.log(JSON.stringify(formatData(form)));
+      setLoading(true);
+
       fetch(baseUrl + "api/projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formatData(form)),
-      }).then(() => {
-        console.log("Porject creaed");
-      });
+      })
+        .then(() => {
+          if (!response.ok) {
+            throw new Error("Failed to create the project");
+          }
+          console.log("Porject created");
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     }
   };
 
@@ -283,7 +293,12 @@ function CreateProject() {
           </Form.Control.Feedback>
         </Form.Group>
 
-        <Button type="submit">Submit form</Button>
+        {!isLoading && <Button type="submit">Opslaan</Button>}
+        {isLoading && (
+          <Button type="submit" disabled>
+            Aan het opslaan...
+          </Button>
+        )}
       </Form>
     </Container>
   );
