@@ -31,7 +31,7 @@ export default function ProjectTable(props) {
               <td>Nog {phase?.total_checks - phase?.checked} check(s)</td>
               <td>
                 <Link
-                  to={`api/phases/${phase["0"].phase.id}/details`}
+                  to={`checklist/${phase["0"].phase.id}`}
                   className="primaryLink"
                 >
                   Ga naar checklist

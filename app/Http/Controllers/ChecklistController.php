@@ -15,14 +15,23 @@ class ChecklistController extends Controller
 
     public function getChecklist(Project $project, Phase $phase)
     {
-        $data = ChecklistProject::with('checklistTemplate')
-            ->where([
-                ['project_id', '=', $project->id],
-                ['phase_id', '=', $phase->id]
-            ])->get();
+        $checklistProjects = ChecklistProject::with('checklistTemplate')
+            ->where('project_id', $project->id)
+            ->where('phase_id', $phase->id)
+            ->get();
 
-        return $this->respondWithSuccess($data);
+        $filteredData = $checklistProjects->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'question_checked' => $item->question_checked,
+                'question' => $item->checklistTemplate->question
+            ];
+        })->toArray();
+
+        return $this->respondWithSuccess($filteredData);
     }
+
+
 
     public function editChecklist(Project $project, Phase $phase, Request $request)
     {

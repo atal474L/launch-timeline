@@ -10,7 +10,7 @@ function Template() {
   const [selectedItems, setSelectedItems] = useState([]);
 
   useEffect(() => {
-    fetch(baseUrl + "api/project/checklist/template/22")
+    fetch(baseUrl + "api/projects/22/checklist/template")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch the template");
@@ -71,7 +71,7 @@ function Template() {
       comment: "dd",
     }));
 
-    fetch(baseUrl + "api/project/checklist/template/22", {
+    fetch(baseUrl + "api/projects/22/checklist/template/", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

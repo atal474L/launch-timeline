@@ -19,12 +19,21 @@ class ProjectController extends Controller
     use ApiResponseHelpers;
 
 
-    public function getProjectOverview(Request $request)
+    public function getHomeProject()
     {
-        $response = Project::with(['checklistProjects', 'phases'=> fn($q) => $q->where('phase_project.active', '=', 1 )])
-            ->get();
+        $projectId = Project::join('phase_project', 'projects.id', '=', 'phase_project.project_id')
+            ->join('phases', 'phase_project.phase_id', '=', 'phases.id')
+            ->where('phase_project.active', '=', 1)
+            ->orderBy('phase_project.deadline', 'asc')
+            ->first('projects.id');
 
-        return $this->filterDataForProjectTable($response);
+        $data = Project::with('phases')->findOrFail($projectId);
+
+        $filteredData = collect(json_decode($data, true))->map(function ($item) {
+            return $this->mapPhases($item);
+        })->flatten(1);
+
+        return $this->respondWithSuccess($filteredData);
     }
 
 
@@ -38,6 +47,15 @@ class ProjectController extends Controller
         $filteredData = $this->filterDataForProjectTable($projects);
 
         return $this->respondWithSuccess($filteredData);
+    }
+
+
+    public function getProjectsOverview(Request $request)
+    {
+        $response = Project::with(['checklistProjects', 'phases'=> fn($q) => $q->where('phase_project.active', '=', 1 )])
+            ->get();
+
+        return $this->filterDataForProjectTable($response);
     }
 
 
@@ -61,174 +79,6 @@ class ProjectController extends Controller
 
             return $project;
         });
-    }
-
-
-
-
-
-
-
-
-//    public function getTopTenProjects()
-//    {
-//        $response = Project::with(['checklistProjects', 'phases'=> fn($q) => $q->where('phase_project.active', '=', 1 )])
-//            ->orderBy('deadline')
-//            ->take(10)
-//            ->get();
-//
-//        return $this->filterDataForProjectTable($response);
-//    }
-//
-//    private function filterDataForProjectTable($response)
-//    {
-//        $data = json_decode($response, true);
-//
-//        foreach ($data as $key => $project) {
-//            foreach ($project['phases'] as $phase) {
-//                if ($phase['pivot']['active'] === 1) {
-//                    $data[$key]['active_phase_id'] = $phase['pivot']['phase_id'];
-//                    $data[$key]['active_phase_deadline'] = \Carbon\Carbon::createFromFormat('Y-m-d', $phase['pivot']['deadline'])->format('d/m/Y');
-//                }
-//            }
-//        }
-//
-//        foreach ($data as $key => $project){
-//            $activeChecks = 0;
-//            $checked = 0;
-//            foreach ($project['checklist_projects'] as $checklist){
-//                if ((array_key_exists('active_phase_id', $project)) && $checklist['phase_id'] == $project['active_phase_id']){
-//                    $activeChecks++;
-//                    if ($checklist['question_checked'] == 1){
-//                        $checked++;
-//                    }
-//                }
-//            }
-//            $data[$key]['progress'] = (($checked / $activeChecks * 10000)/100);
-//        }
-//        return $this->respondWithSuccess($data);
-//    }
-
-//
-//    public function projectTimeline(Project $project)
-//    {
-//        //$findProject = Project::findOrFail($project->id)->makeHidden(['name', 'state', 'deadline', 'created_at', 'updated_at', 'deleted_at', 'user_id']);
-//
-//        $data = Project::with('phases', 'user')->findOrFail(['id'=> $project->id]);
-//
-//        $filteredData = collect(json_decode($data, true))->map(function ($item) {
-//            $phases = collect($item['phases'])
-//                ->sortBy('pivot.phase_id')
-//                ->map(function ($phase) use ($item) {
-//                    return [
-//                        'user_name' => $item['user']['name'],
-//                        'name' => $item['name'],
-//                        'project_deadline' => $item['deadline']= \Carbon\Carbon::createFromFormat('Y-m-d', $item['deadline'])->format('d/m/Y'),
-//                        'phase_name' => $phase['phase_name'],
-//                        'phase_id' => $phase['pivot']['phase_id'],
-//                        'project_id' => $phase['pivot']['project_id'],
-//                        'active' => $phase['pivot']['active'],
-//                        'deadline' => $phase['pivot']['deadline']= \Carbon\Carbon::createFromFormat('Y-m-d', $phase['pivot']['deadline'])->format('d/m/Y')
-//                    ];
-//                });
-//
-//            return $phases;
-//        })->flatten(1);
-//
-//        return $this->respondWithSuccess($filteredData);
-//    }
-
-//    public function storeProject(Request $request)
-//    {
-//        $template = ChecklistTemplate::select('id', 'phase_id')->get();
-//        $attributes = $template->map(function ($item) {
-//            return [
-//                'checklist_template_id' => $item->id,
-//                'phase_id' => $item->phase_id,
-//                'question_checked' => 0,
-//                'comment' => ''
-//            ];
-//        })->all();
-//
-//
-//        $project = new Project($request->all());
-//        $project->user_id = $request->user_id;
-//        $project->save();
-//
-//        Project::findorfail($project->id)->phases()->sync($request->phases);
-//
-//        Project::findorfail($project->id)->checklistProjects()->createMany($attributes);
-//
-//        //return response()->json(['message' => 'The project has been created'], 201);
-//        return $this->respondOk('The project has been created');
-//    }
-
-//    public function getProjectChecklistTemplate(Project $project)
-//    {
-//        $groupedData = $this->groupChecksByPhase($project->id);
-//
-//        $transformedData = $groupedData->map(function ($items, $phaseId) {
-//            return [
-//                'phase_id' => $phaseId,
-//                'items' => $items->map(function ($item) {
-//                    return [
-//                        'id' => $item['id'],
-//                        'checklist_template_id' => $item['checklist_template_id'],
-//                        'phase_id' => $item['phase_id'],
-//                        'question' => $item['checklist_template']['question'],
-//                    ];
-//                })->toArray(),
-//            ];
-//        })->values()->toArray();
-//
-//        return $this->respondWithSuccess($transformedData);
-//    }
-
-//    public function configureProjectChecklistTemplate(Project $project, Request $request)
-//    {
-//        Project::findorfail($project->id)->checklistProjects()->delete();
-//
-//        Project::findorfail($project->id)->checklistProjects()->createMany($request->data);
-//
-//        return $this->respondOk('The project checklist has been configured');
-//    }
-
-
-
-
-
-
-
-
-
-
-
-    public function getHomeProject()
-    {
-        $projectId = Project::join('phase_project', 'projects.id', '=', 'phase_project.project_id')
-            ->join('phases', 'phase_project.phase_id', '=', 'phases.id')
-            ->where('phase_project.active', '=', 1)
-            ->orderBy('phase_project.deadline', 'asc')
-            ->first('projects.id');
-
-        $data = Project::with('phases')->findOrFail($projectId);
-
-        $filteredData = collect(json_decode($data, true))->map(function ($item) {
-            $phases = collect($item['phases'])->map(function ($phase) use ($item) {
-                return [
-                    'name' => $item['name'],
-                    'phase_name' => $phase['phase_name'],
-                    'phase_id' => $phase['pivot']['phase_id'],
-                    'project_id' => $phase['pivot']['project_id'],
-                    'active' => $phase['pivot']['active'],
-                    'deadline' => $phase['pivot']['deadline']= \Carbon\Carbon::createFromFormat('Y-m-d', $phase['pivot']['deadline'])->format('d/m/Y')
-                ];
-            });
-
-            return $phases;
-        })->flatten(1);
-
-        return $this->respondWithSuccess($filteredData);
     }
 
 
@@ -323,7 +173,7 @@ class ProjectController extends Controller
     }
 
 
-    public function projectTimeline(Project $project)
+    public function getProjectTimeline(Project $project)
     {
         $projectData = Project::with('phases', 'user')->findOrFail(['id' => $project->id]);
 
@@ -340,7 +190,7 @@ class ProjectController extends Controller
             ->sortBy('pivot.phase_id')
             ->map(function ($phase) use ($item) {
                 return [
-                    'user_name' => $item['user']['name'],
+                    'user_name' => $item['user']['name'] ?? null,
                     'name' => $item['name'],
                     'project_deadline' => \Carbon\Carbon::createFromFormat('Y-m-d', $item['deadline'])->format('d/m/Y'),
                     'phase_name' => $phase['phase_name'],
@@ -353,7 +203,7 @@ class ProjectController extends Controller
     }
 
 
-    public function projectDetails(Project $project)
+    public function getProjectDetails(Project $project)
     {
         $groupedData = $this->groupChecksByPhase($project->id);
         $transformedData = $groupedData->map(function ($items, $phaseId) {

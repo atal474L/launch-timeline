@@ -35,11 +35,11 @@ const router = createBrowserRouter([
         element: <Template />,
       },
       {
-        path: "/projecten/:id/details",
+        path: "/projecten/:id",
         element: <Detail />,
       },
       {
-        path: "/projecten/checklist",
+        path: "/projecten/:id/checklist/:1d",
         element: <Checklist />,
       },
     ],

@@ -7,6 +7,7 @@ import { Link, useParams } from "react-router-dom";
 import DetailsPerPhase from "../components/DetailsPerPhase";
 
 function Detail() {
+  const baseUrl = import.meta.env.VITE_BASE_URL;
   //deadline countdown
   const [deadlineDate, setDeadlineDate] = useState("");
   const { id } = useParams();
@@ -20,7 +21,7 @@ function Detail() {
 
   useEffect(() => {
     //project timeline
-    fetch(`http://localhost:8000/api/projects/${id}/timeline`)
+    fetch(baseUrl + `api/projects/${id}/timeline`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch data");
@@ -35,7 +36,7 @@ function Detail() {
       });
 
     //project details
-    fetch(`http://localhost:8000/api/projects/${id}/details`)
+    fetch(baseUrl + `api/projects/${id}/details`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch the project details");
@@ -51,7 +52,7 @@ function Detail() {
       });
 
     //project phases with checklist
-    fetch(`http://localhost:8000/api/projects/${id}/phases`)
+    fetch(baseUrl + `api/projects/${id}/phases`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch the project phases");

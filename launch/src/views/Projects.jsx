@@ -47,7 +47,7 @@ export default function Projects() {
   };
 
   useEffect(() => {
-    fetch(baseUrl + "api/projectoverview")
+    fetch(baseUrl + "api/projects-overview")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch the projects");
@@ -141,7 +141,7 @@ export default function Projects() {
             <Column field="state" header="Project status" sortable></Column>
             <Column
               body={(rowData) => (
-                <Link to={`${rowData?.id}/details`} className="primaryLink">
+                <Link to={`${rowData?.id}`} className="primaryLink">
                   Project bekijken
                 </Link>
               )}

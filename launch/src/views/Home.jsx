@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import ProjectTable from "../components/ProjectTable";
 
 function Home() {
+  const baseUrl = import.meta.env.VITE_BASE_URL;
   const [deadlineDate, setDeadlineDate] = useState("");
 
   const [todaysProject, setTodaysProject] = useState([]);
@@ -14,7 +15,7 @@ function Home() {
   const [topTenProjects, setTopTenProjects] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/homeproject")
+    fetch(baseUrl + "api/home-project")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch data");
@@ -29,7 +30,7 @@ function Home() {
       });
 
     // top 10 projecten op basis van deadline
-    fetch("http://localhost:8000/api/toptenprojects")
+    fetch(baseUrl + "api/top-ten-projects")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch top ten projects");

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,19 +16,18 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::get('homeproject', [\App\Http\Controllers\ProjectController::class, 'getHomeProject']);
-Route::get('toptenprojects', [\App\Http\Controllers\ProjectController::class, 'getTopTenProjects']);
+Route::get('home-project', [ProjectController::class, 'getHomeProject']);
+Route::get('top-ten-projects', [ProjectController::class, 'getTopTenProjects']);
 
-Route::get('projectoverview', [\App\Http\Controllers\ProjectController::class, 'getProjectOverview']);
+Route::get('projects-overview', [ProjectController::class, 'getProjectsOverview']);
 
-Route::post('projects', [\App\Http\Controllers\ProjectController::class, 'storeProject']);
-Route::get('project/checklist/template/{project}', [\App\Http\Controllers\ProjectController::class, 'getProjectChecklistTemplate']);
-Route::put('project/checklist/template/{project}', [\App\Http\Controllers\ProjectController::class, 'configureProjectChecklistTemplate']);
+Route::post('projects', [ProjectController::class, 'storeProject']);
+Route::get('projects/{project}/checklist/template', [ProjectController::class, 'getProjectChecklistTemplate']);
+Route::put('projects/{project}/checklist/template', [ProjectController::class, 'configureProjectChecklistTemplate']);
 
-Route::get('projects/{project}/timeline', [\App\Http\Controllers\ProjectController::class, 'projectTimeline']);
-Route::get('projects/{project}/details', [\App\Http\Controllers\ProjectController::class, 'projectDetails']);
-
-Route::get('projects/{project}/phases', [\App\Http\Controllers\ProjectController::class, 'getProjectPhases']);
+Route::get('projects/{project}/timeline', [ProjectController::class, 'getProjectTimeline']);
+Route::get('projects/{project}/details', [ProjectController::class, 'getProjectDetails']);
+Route::get('projects/{project}/phases', [ProjectController::class, 'getProjectPhases']);
 
 Route::get('teams', [\App\Http\Controllers\Controller::class, 'getTeams']);
 
