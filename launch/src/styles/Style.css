@@ -12,9 +12,13 @@ html body {
 }
 .primaryBtn{
   background-color: #037272;
+  padding: 0.6em;
+  border-radius: 0.6em;
 }
 .secondryBtn{
   background-color: #5C6174;
+  padding: 0.6em;
+  border-radius: 0.6em;
 }
 .primaryBtn:hover{
   background-color: #037272;
@@ -33,7 +37,7 @@ html body {
   cursor: pointer;
   transition: all 0.2s;
 }
-.primaryBtnLink:hover {
+.primaryBtnLink:hover, .thirdBtn:hover {
   border: 1px solid #037272;
   background-color: transparent;
   color: #037272;
@@ -55,6 +59,14 @@ html body {
   color: #5C6174;
   position: static;
   z-index: 10;
+}
+.thirdBtn{
+  background-color: transparent;
+  text-decoration: underline;
+  color: #5C6174;
+  border: none;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 1.2em;
 }
 
 .navbar-brand{
@@ -104,7 +116,6 @@ a.nav-links:hover::after {
     transform: scaleX(1);
     transform-origin: bottom right;
 }
-
 
 
 
@@ -230,13 +241,16 @@ a.nav-links:hover::after {
   margin-right: 15%;
 }
 
+
+
+
 /* home page */
 
 .home {
   margin-top: 5em;
   margin-bottom: 5em;
 }
-.home h1{
+.home h1, .create-page h1{
   color: #1E2F31;
   font-family: 'Roboto Condensed', sans-serif;
   font-weight: 600;
@@ -251,6 +265,7 @@ a.nav-links:hover::after {
   font-family: 'Roboto Condensed', sans-serif;
   font-size: 1.2em;
 }
+
 
 /* home page table */
 .homeSec2{
@@ -291,6 +306,7 @@ a.nav-links:hover::after {
 .homeTable .primaryLink:hover{
   color: #037272;
 }
+
 
 /*project page table*/
 #custom-table{
@@ -334,6 +350,7 @@ a.nav-links:hover::after {
 #custom-table tr a:hover{
   color: #037272;
 }
+
 /*project page filters*/
 .project-filters{
   padding-bottom: 0.5em;
@@ -416,8 +433,138 @@ a.nav-links:hover::after {
 
 
 
+/* Create project page */
+.create-page{
+  margin-top: 6em;
+  margin-bottom: 3em; 
+}
+.form-container{
+  background-color: #f8f8f8;
+  max-width: 57.25em;
+  margin: 0 auto;
+  padding: 3em 5em;
+  border-radius: 1em;
+}
+.form-container .form-label, .form-container .form-control, .form-container .form-select {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.2em;
+  color: #1E2F31;
+  border-radius: 0.6em;
+}
+.form-container .form-control, .form-container .form-select {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+}
+.form-container .form-label{
+  padding-top: 1.2em;
+}
+form>:nth-child(4) {
+  padding-top: 3.5em;
+} 
+
+.form-container .form-control, .form-container .form-select  {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.2em;
+  color: #1E2F31;
+}
+.form-btns{
+  display: flex;
+  justify-content: space-between;
+  margin: 2em auto;
+}
+.form-btns+div{
+  text-align: right;
+}
 
 
+
+/* checkbox template page*/
+
+.template-page{
+  margin-top: 6em;
+  margin-bottom: 3em; 
+}
+.template-page p{
+  color: #1E2F31;
+  padding: 1em 0;
+}
+
+
+/*checklist per phase component*/
+
+.checks-title{
+  color: #5C6174;
+  font-size: 1.3em;
+  font-weight: 600;
+  font-family: 'Roboto Condensed', sans-serif;
+  border-bottom: #5C6174 0.07em solid;
+  padding-bottom: 0.4em;
+  margin-bottom: 2.5em;
+}
+
+
+/*one checkbox*/
+
+.one-checkbox {
+  display: flex;
+  margin-top: 1em;
+}
+.one-checkbox p{
+  background-color: #fff;
+  border-radius: 0.6em;
+  padding: 1em;
+  color: #1E2F31;
+}
+.one-checkbox .line-through{
+  text-decoration: line-through;
+}
+
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: #fff;
+  margin-top: 0.6em;
+  color: #5C6174;
+  width: 2em;
+  height: 2em;
+  border: 0.15em solid currentColor;
+  border-radius: 0.15em;
+  transform: translateY(-0.075em);
+  display: grid;
+  place-content: center;
+  margin-right: 1em;
+}
+
+input[type="checkbox"]::before {
+  content: "";
+  width: 1.3em;
+  height: 1.3em;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1em 1em #037272;
+  background-color: CanvasText;
+  transform-origin: bottom left;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+
+input[type="checkbox"]:focus {
+  outline: max(2px, 0.15em) solid currentColor;
+  outline-offset: max(2px, 0.15em);
+}
+
+.navigation-buttons{
+  display: flex;
+  justify-content: space-around;
+  margin: 3em auto;
+}
+
+.navigation-buttons .steps button:first-child{
+  margin-right: 1em;
+}
 
 
 

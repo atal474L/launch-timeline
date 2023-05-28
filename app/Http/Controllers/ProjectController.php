@@ -107,7 +107,8 @@ class ProjectController extends Controller
 
         $project->checklistProjects()->createMany($checklistItems);
 
-        return $this->respondOk('The project has been created');
+        return $this->respondCreated(['project_id' => $project->id]);
+        //return response()->json(['message' => 'The project has been created', 'project_id' => $project->id]);
     }
 
     private function createChecklistItems($checklistTemplates)

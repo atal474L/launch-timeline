@@ -2,15 +2,18 @@ import React, { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import NavigationButtons from "../components/NavigationButtons";
 import ChecklistPerPhase from "../components/ChecklistPerPhase";
+import { useNavigate, useParams } from "react-router-dom";
 
 function Template() {
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const [data, setData] = useState([]);
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedItems, setSelectedItems] = useState([]);
+  const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(baseUrl + "api/projects/22/checklist/template")
+    fetch(baseUrl + `api/projects/${id}/checklist/template`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch the template");
@@ -71,7 +74,7 @@ function Template() {
       comment: "dd",
     }));
 
-    fetch(baseUrl + "api/projects/22/checklist/template/", {
+    fetch(baseUrl + `api/projects/${id}/checklist/template`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -83,42 +86,56 @@ function Template() {
           throw new Error("Failed to save the template");
         }
       })
+      .then(() => {
+        navigate(`/projecten/${id}`);
+      })
       .catch((error) => {
         console.error("Error:", error);
       });
-    console.log(formattedData);
   }
 
   return (
     <>
       <div className="container">
+        <div className="template-page">
+          <h1>Template configureren</h1>
+          <p>
+            Hier kan de checklist template geconfigureerd worden voor de huidige
+            project.<br></br> Vink de checks aan die op dit project van
+            toepassing zijn.
+          </p>
+        </div>
         <form onSubmit={saveSelectedItems}>
-          <div className="left">
-            {data
-              .filter((item) => item.phase_id === currentStep)
-              .map((phase) => (
-                <ChecklistPerPhase
-                  key={phase.phase_id}
-                  phase={phase}
-                  selectedItems={selectedItems}
-                  checkboxHandler={checkboxHandler}
-                />
-              ))}
-          </div>
-
-          <NavigationButtons
-            currentStep={currentStep}
-            handlePrevious={handlePrevious}
-            handleNext={handleNext}
-          />
-
-          <div className="right">
-            <div className="results">
-              <h3>Result will print here: {selectedItems.toString()} </h3>
-              <Button type="submit">Save</Button>
+          <div className="form-container">
+            <div className="left">
+              {data
+                .filter((item) => item.phase_id === currentStep)
+                .map((phase) => (
+                  <ChecklistPerPhase
+                    key={phase.phase_id}
+                    phase={phase}
+                    selectedItems={selectedItems}
+                    checkboxHandler={checkboxHandler}
+                  />
+                ))}
             </div>
           </div>
+          <div className="navigation-buttons">
+            <NavigationButtons
+              currentStep={currentStep}
+              handlePrevious={handlePrevious}
+              handleNext={handleNext}
+            />
+            {currentStep === 5 ? (
+              <Button type="submit" variant="success" className="primaryBtn">
+                Opslaan
+              </Button>
+            ) : (
+              <></>
+            )}
+          </div>
         </form>
+        <h3>Result will print here: {selectedItems.toString()} </h3>
       </div>
     </>
   );

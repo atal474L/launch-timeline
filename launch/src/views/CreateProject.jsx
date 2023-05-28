@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Container, Form, Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -36,6 +37,7 @@ function CreateProject() {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getTeams();
@@ -138,15 +140,25 @@ function CreateProject() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formatData(form)),
       })
-        .then(() => {
+        .then((response) => {
           if (!response.ok) {
             throw new Error("Failed to create the project");
           }
-          console.log("Porject created");
+          console.log("Project created");
           setLoading(false);
+          return response.json();
+        })
+        .then((data) => {
+          const projectId = data.project_id;
+          if (e.target.innerText === "Opslaan en doorgaan") {
+            navigate(`/projecten/toevoegen/${projectId}/template`);
+          } else {
+            navigate("/projecten");
+          }
         })
         .catch((error) => {
           console.error("Error:", error);
+          setLoading(false);
         });
     }
   };
@@ -179,9 +191,16 @@ function CreateProject() {
     }
   }, [form.projectDeadline]);
 
+  function handleGoBack() {
+    navigate(-1);
+  }
+
   return (
     <Container>
-      <Form onSubmit={handleSubmit}>
+      <div className="create-page">
+        <h1>Nieuwe project aanmaken</h1>
+      </div>
+      <Form onSubmit={handleSubmit} className="form-container">
         <Form.Group controlId="projectName">
           <Form.Label>Projectnaam</Form.Label>
           <Form.Control
@@ -293,9 +312,34 @@ function CreateProject() {
           </Form.Control.Feedback>
         </Form.Group>
 
-        {!isLoading && <Button type="submit">Opslaan</Button>}
+        {!isLoading && (
+          <>
+            <div className="form-btns">
+              <Button
+                variant="secondary"
+                onClick={handleGoBack}
+                className="secondryBtn"
+              >
+                Terug gaan
+              </Button>
+              <Button
+                variant="success"
+                value="Opslaan en doorgaan"
+                onClick={handleSubmit}
+                className="primaryBtn"
+              >
+                Opslaan en doorgaan
+              </Button>
+            </div>
+            <div>
+              <Button type="submit" variant="success" className="thirdBtn">
+                Project opslaan
+              </Button>
+            </div>
+          </>
+        )}
         {isLoading && (
-          <Button type="submit" disabled>
+          <Button type="submit" disabled className="primaryBtn">
             Aan het opslaan...
           </Button>
         )}

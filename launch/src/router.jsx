@@ -31,7 +31,7 @@ const router = createBrowserRouter([
         element: <CreateProject />,
       },
       {
-        path: "/projecten/toevoegen/template",
+        path: "/projecten/toevoegen/:id/template",
         element: <Template />,
       },
       {
