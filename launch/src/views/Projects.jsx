@@ -134,7 +134,7 @@ export default function Projects() {
                 <ProgressBar
                   now={rowData.progress}
                   label={`${rowData.progress}%`}
-                  variant="success"
+                  className="custom-progress-bar"
                 />
               )}
             />

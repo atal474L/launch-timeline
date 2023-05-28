@@ -93,10 +93,10 @@ function Detail() {
           {projectTimeline && <Timeline project={projectTimeline}></Timeline>}
           <div className="d-flex justify-content-end timelineBtn">
             <Link
-              to={`/api/project/${
+              to={`/projecten/${
                 projectTimeline ? projectTimeline[0]?.project_id : null
-              }/${activePhaseId}`}
-              className="btn btn-primary primaryBtnLink"
+              }/checklist/${activePhaseId}`}
+              className="btn primaryBtnLink"
             >
               Start met checklist
             </Link>

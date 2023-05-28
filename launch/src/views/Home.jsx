@@ -71,10 +71,10 @@ function Home() {
           {todaysProject && <Timeline project={todaysProject}></Timeline>}
           <div className="d-flex justify-content-end timelineBtn">
             <Link
-              to={`/api/project/${
+              to={`projecten/${
                 todaysProject ? todaysProject[0]?.project_id : null
-              }/${activePhaseId}`}
-              className="btn btn-primary primaryBtnLink"
+              }/checklist/${activePhaseId}`}
+              className="btn primaryBtnLink"
             >
               Start met checklist
             </Link>

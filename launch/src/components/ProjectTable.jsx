@@ -54,15 +54,12 @@ export default function ProjectTable(props) {
                   <ProgressBar
                     now={project?.progress}
                     label={`${project?.progress}%`}
-                    variant="success"
+                    className="custom-progress-bar"
                   />
                 </td>
                 <td>{project?.state}</td>
                 <td>
-                  <Link
-                    to={`api/projects/${project?.id}/details`}
-                    className="primaryLink"
-                  >
+                  <Link to={`projecten/${project?.id}`} className="primaryLink">
                     Project bekijken
                   </Link>
                 </td>

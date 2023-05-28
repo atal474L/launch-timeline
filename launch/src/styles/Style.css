@@ -12,13 +12,14 @@ html body {
 }
 .primaryBtn{
   background-color: #037272;
-  padding: 0.6em;
-  border-radius: 0.6em;
+  /* padding: 0.6em; */
+  padding: 0.375em 0.75em;
+  border-radius: 0.5em;
 }
 .secondryBtn{
   background-color: #5C6174;
-  padding: 0.6em;
-  border-radius: 0.6em;
+  padding: 0.375em 0.75em;
+  border-radius: 0.5em;
 }
 .primaryBtn:hover{
   background-color: #037272;
@@ -116,6 +117,11 @@ a.nav-links:hover::after {
     transform: scaleX(1);
     transform-origin: bottom right;
 }
+
+.custom-progress-bar .progress-bar {
+  background-color: #037272; 
+}
+
 
 
 
@@ -478,7 +484,9 @@ form>:nth-child(4) {
 
 
 
-/* checkbox template page*/
+
+
+/* checkbox template page && checklist page*/
 
 .template-page{
   margin-top: 6em;
@@ -565,6 +573,13 @@ input[type="checkbox"]:focus {
 .navigation-buttons .steps button:first-child{
   margin-right: 1em;
 }
+
+.form-container .custom-progress-bar{
+
+  margin-bottom: 2em;
+}
+
+
 
 
 

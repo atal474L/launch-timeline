@@ -1,34 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
-
-const OneCheckbox = ({ item, selectedItems, checkboxHandler }) => {
-  return (
-    <div className="card">
-      <label>
-        <input
-          type="checkbox"
-          checked={selectedItems.includes(item.id)}
-          value={item.id}
-          onChange={checkboxHandler}
-        />
-      </label>
-      <h1>Id: {item.id}</h1>
-      <h2>{item.checklist_template_id}</h2>
-      <p>{item.question}</p>
-    </div>
-  );
-};
+import { useNavigate, useParams } from "react-router-dom";
+import OneCheckbox from "../components/OneCheckbox";
+import ProgressBar from "react-bootstrap/ProgressBar";
 
 function Checklist() {
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const [data, setData] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [isLoading, setLoading] = useState(false);
+  const { projectId, checklistId } = useParams();
+  const progress = (selectedItems.length / data.length) * 100;
+  const navigate = useNavigate();
+  const title = [
+    "CMS training",
+    "Pre Pre-launch",
+    "Pre-launch",
+    "Post launch",
+    "Offboarding",
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          baseUrl + "api/projects/23/phases/1/checklist"
+          baseUrl + `api/projects/${projectId}/phases/${checklistId}/checklist`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch the checklist");
@@ -68,48 +64,83 @@ function Checklist() {
         selectedItems.includes(item.id) ? 1 : 0
       ),
     };
-    console.log(updatedData);
+    setLoading(true);
 
-    fetch(baseUrl + "api/projects/23/phases/1/checklist", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedData),
-    })
+    fetch(
+      baseUrl + `api/projects/${projectId}/phases/${checklistId}/checklist`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      }
+    )
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to save the checklist");
         }
         console.log("Checklist saved successfully");
+        setLoading(false);
+      })
+      .then(() => {
+        navigate(`/projecten/${projectId}`);
       })
       .catch((error) => {
         console.error("Error:", error);
+        setLoading(false);
       });
   }
 
   return (
     <>
       <div className="container">
+        <div className="template-page">
+          <h1>Checklist {title[checklistId - 1]}</h1>
+        </div>
         <form>
-          {data.map((item, index) => (
-            <OneCheckbox
-              key={index}
-              item={item}
-              selectedItems={selectedItems}
-              checkboxHandler={checkboxHandler}
+          <div className="form-container">
+            <ProgressBar
+              now={progress}
+              label={progress ? `${progress}%` : 0}
+              className="custom-progress-bar"
             />
-          ))}
+            <h4 className="checks-title">{title[checklistId - 1]}</h4>
+            {data.map((item, index) => (
+              <OneCheckbox
+                key={index}
+                item={item}
+                selectedItems={selectedItems}
+                checkboxHandler={checkboxHandler}
+              />
+            ))}
+          </div>
 
-          <div className="right">
-            <div className="results">
-              <h3>Result will print here: {selectedItems.toString()} </h3>
-              <Button type="button" onClick={handleSave}>
-                Save
+          <div className="navigation-buttons">
+            {!isLoading && (
+              <Button
+                type="button"
+                variant="success"
+                className="primaryBtn"
+                onClick={handleSave}
+              >
+                Opslaan
               </Button>
-            </div>
+            )}
+            {isLoading && (
+              <Button
+                type="button"
+                variant="scondary"
+                className="primaryBtn"
+                onClick={handleSave}
+                disabled
+              >
+                Aan het opslaan...
+              </Button>
+            )}
           </div>
         </form>
+        <h3>Result will print here: {selectedItems.toString()} </h3>
       </div>
     </>
   );

@@ -7,7 +7,7 @@ export default function DetailsPerPhase(props) {
   const uncheckedQuestions = [];
   const title = [
     "CMS training",
-    "Pre Pre launch",
+    "Pre Pre-launch",
     "Pre-launch",
     "Post launch",
     "Offboarding",

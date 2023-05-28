@@ -25,7 +25,7 @@ export default function ProjectTable(props) {
                 <ProgressBar
                   now={phase?.progress}
                   label={`${phase?.progress}%`}
-                  variant="success"
+                  className="custom-progress-bar"
                 />
               </td>
               <td>Nog {phase?.total_checks - phase?.checked} check(s)</td>
