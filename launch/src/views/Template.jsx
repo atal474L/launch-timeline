@@ -135,7 +135,7 @@ function Template() {
             )}
           </div>
         </form>
-        <h3>Result will print here: {selectedItems.toString()} </h3>
+        {/* <h3>Result will print here: {selectedItems.toString()} </h3> */}
       </div>
     </>
   );

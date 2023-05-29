@@ -40,7 +40,9 @@ class ProjectController extends Controller
 
     public function getTopTenProjects()
     {
-        $projects = Project::with(['checklistProjects', 'phases'])
+        $projects = Project::with(['checklistProjects', 'phases' => function ($q) {
+            $q->where('phase_project.active', '=', 1);
+        }])
             ->where('state', '=', 'active')
             ->orderBy('deadline')
             ->take(10)
