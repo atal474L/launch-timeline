@@ -24,6 +24,7 @@ class ProjectController extends Controller
         $projectId = Project::join('phase_project', 'projects.id', '=', 'phase_project.project_id')
             ->join('phases', 'phase_project.phase_id', '=', 'phases.id')
             ->where('phase_project.active', '=', 1)
+            ->where('projects.state', '=', 'active')
             ->orderBy('phase_project.deadline', 'asc')
             ->first('projects.id');
 
@@ -40,6 +41,7 @@ class ProjectController extends Controller
     public function getTopTenProjects()
     {
         $projects = Project::with(['checklistProjects', 'phases'])
+            ->where('state', '=', 'active')
             ->orderBy('deadline')
             ->take(10)
             ->get();

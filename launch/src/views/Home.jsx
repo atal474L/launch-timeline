@@ -64,23 +64,31 @@ function Home() {
           </div>
         </Stack>
       </Container>
-      <div className="container timelineBg">
-        {/* <h3>{todaysProject ?? todaysProject[0].name}</h3> */}
-        <h3>{todaysProject ? todaysProject[0]?.name : null}</h3>
-        <div className="timeline">
-          {todaysProject && <Timeline project={todaysProject}></Timeline>}
-          <div className="d-flex justify-content-end timelineBtn">
-            <Link
-              to={`projecten/${
-                todaysProject ? todaysProject[0]?.project_id : null
-              }/checklist/${activePhaseId}`}
-              className="btn primaryBtnLink"
-            >
-              Start met checklist
-            </Link>
+      {Object.keys(todaysProject).length > 0 ? (
+        <div className="container timelineBg">
+          {/* <h3>{todaysProject ?? todaysProject[0].name}</h3> */}
+          <h3>{todaysProject ? todaysProject[0]?.name : null}</h3>
+          <div className="timeline">
+            {todaysProject && <Timeline project={todaysProject}></Timeline>}
+            <div className="d-flex justify-content-end timelineBtn">
+              <Link
+                to={`projecten/${
+                  todaysProject ? todaysProject[0]?.project_id : null
+                }/checklist/${activePhaseId}`}
+                className="btn primaryBtnLink"
+              >
+                Start met checklist
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="d-flex justify-content-center">
+          <div className="alert alert-info" role="alert">
+            Geen project gevonden.
+          </div>
+        </div>
+      )}
 
       <div className="container homeSec2">
         <h2>Top 10 projecten gebaseerd op eerstvolgende deadlines</h2>
