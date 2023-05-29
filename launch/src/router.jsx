@@ -8,6 +8,7 @@ import Checklist from "./views/Checklist";
 import DefaultLayout from "./components/DefaultLayout";
 import Timeline from "./components/Timeline";
 import Login from "./views/Login";
+import UpdateProject from "./views/UpdateProject";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
       {
         path: "/projecten/:id",
         element: <Detail />,
+      },
+      {
+        path: "/projecten/:id/bewerken",
+        element: <UpdateProject />,
       },
       {
         path: "/projecten/:projectId/checklist/:checklistId",

@@ -111,6 +111,41 @@ class ProjectController extends Controller
         //return response()->json(['message' => 'The project has been created', 'project_id' => $project->id]);
     }
 
+
+    public function updateProject(Request $request, Project $project)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'string|max:40',
+            'deadline' => 'date',
+            'user_id' => 'exists:users,id',
+            'phases' => 'array',
+            'phases.*.phase_id' => 'required|exists:phases,id',
+            'phases.*.deadline' => 'required|date',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed', 'errors' => $validator->errors()], 422);
+        }
+
+        $project->name = $request->input('name', $project->name);
+        $project->deadline = $request->input('deadline', $project->deadline);
+        $project->user_id = $request->input('user_id', $project->user_id);
+        $project->save();
+
+        $phasesData = $request->input('phases', []);
+        $phases = [];
+
+        foreach ($phasesData as $phaseData) {
+            $phase = Phase::findOrFail($phaseData['phase_id']);
+            $phases[$phase->id] = ['deadline' => $phaseData['deadline'], 'active' => $project->phases->find($phase->id)->pivot->active];
+        }
+
+        $project->phases()->sync($phases);
+
+        return $this->respondOk('The project has been updated');
+    }
+
+
     private function createChecklistItems($checklistTemplates)
     {
         return $checklistTemplates->map(function ($template) {
@@ -192,6 +227,7 @@ class ProjectController extends Controller
             ->map(function ($phase) use ($item) {
                 return [
                     'user_name' => $item['user']['name'] ?? null,
+                    'user_id' => $item['user']['id'] ?? null,
                     'name' => $item['name'],
                     'project_deadline' => \Carbon\Carbon::createFromFormat('Y-m-d', $item['deadline'])->format('d/m/Y'),
                     'phase_name' => $phase['phase_name'],

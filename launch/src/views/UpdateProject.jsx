@@ -1,29 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Container, Form, Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
-const generateDefaultPhaseDeadline = (projectDeadline, fieldName) => {
-  const date = new Date(projectDeadline);
-  const deadlineDate = new Date(date);
-
-  if (fieldName === "phase1Deadline") {
-    deadlineDate.setDate(deadlineDate.getDate() - 28);
-  } else if (fieldName === "phase2Deadline") {
-    deadlineDate.setDate(deadlineDate.getDate() - 21);
-  } else if (fieldName === "phase3Deadline") {
-    deadlineDate.setDate(deadlineDate.getDate() - 14);
-  } else if (fieldName === "phase4Deadline") {
-    deadlineDate.setDate(deadlineDate.getDate() + 7);
-  } else if (fieldName === "phase5Deadline") {
-    deadlineDate.setDate(deadlineDate.getDate() + 14);
-  }
-
-  return deadlineDate.toISOString().split("T")[0];
-};
-
-function CreateProject() {
+function UpdateProject() {
+  const { id } = useParams();
   const [teams, setTeams] = useState([]);
   const [form, setForm] = useState({
     projectName: "",
@@ -40,8 +22,28 @@ function CreateProject() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    fetchProject();
     getTeams();
-  }, []);
+  }, [id]);
+
+  const fetchProject = async () => {
+    try {
+      const response = await fetch(baseUrl + `api/projects/${id}/timeline`);
+      const projectData = await response.json();
+      setForm({
+        projectName: projectData[0].name,
+        team: projectData[0].user_id,
+        projectDeadline: formatDate(projectData[0].project_deadline),
+        phase1Deadline: formatDate(projectData[0].deadline),
+        phase2Deadline: formatDate(projectData[1].deadline),
+        phase3Deadline: formatDate(projectData[2].deadline),
+        phase4Deadline: formatDate(projectData[3].deadline),
+        phase5Deadline: formatDate(projectData[4].deadline),
+      });
+    } catch (error) {
+      console.log("Failed to fetch the project:", error);
+    }
+  };
 
   const getTeams = async () => {
     try {
@@ -66,6 +68,10 @@ function CreateProject() {
       }));
     }
   };
+  const formatDate = (dateString) => {
+    const [day, month, year] = dateString.split("/");
+    return `${year}-${month}-${day}`;
+  };
 
   const validateForm = () => {
     const currentDate = new Date();
@@ -87,23 +93,23 @@ function CreateProject() {
     if (team === "") {
       newErrors.team = "Selecteer een team a.u.b.";
     }
-    if (!projectDeadline || new Date(projectDeadline) < currentDate) {
+    if (!projectDeadline) {
       newErrors.projectDeadline = "Selecteer een geldige deadline a.u.b.";
     }
-    if (!phase1Deadline || new Date(phase1Deadline) < currentDate) {
-      newErrors.phase1Deadline = "De deadline mag niet in het verleden liggen";
+    if (!phase1Deadline) {
+      newErrors.phase1Deadline = "Selecteer een geldige deadline a.u.b.";
     }
-    if (!phase2Deadline || new Date(phase2Deadline) < currentDate) {
-      newErrors.phase2Deadline = "De deadline mag niet in het verleden liggen";
+    if (!phase2Deadline) {
+      newErrors.phase2Deadline = "Selecteer een geldige deadline a.u.b.";
     }
-    if (!phase3Deadline || new Date(phase3Deadline) < currentDate) {
-      newErrors.phase3Deadline = "De deadline mag niet in het verleden liggen";
+    if (!phase3Deadline) {
+      newErrors.phase3Deadline = "Selecteer een geldige deadline a.u.b.";
     }
-    if (!phase4Deadline || new Date(phase4Deadline) < currentDate) {
-      newErrors.phase4Deadline = "De deadline mag niet in het verleden liggen";
+    if (!phase4Deadline) {
+      newErrors.phase4Deadline = "Selecteer een geldige deadline a.u.b.";
     }
-    if (!phase5Deadline || new Date(phase5Deadline) < currentDate) {
-      newErrors.phase5Deadline = "De deadline mag niet in het verleden liggen";
+    if (!phase5Deadline) {
+      newErrors.phase5Deadline = "Selecteer een geldige deadline a.u.b.";
     }
 
     return newErrors;
@@ -115,11 +121,11 @@ function CreateProject() {
       deadline: form.projectDeadline,
       user_id: form.team,
       phases: [
-        { phase_id: 1, deadline: form.phase1Deadline, active: 1 },
-        { phase_id: 2, deadline: form.phase2Deadline, active: 0 },
-        { phase_id: 3, deadline: form.phase3Deadline, active: 0 },
-        { phase_id: 4, deadline: form.phase4Deadline, active: 0 },
-        { phase_id: 5, deadline: form.phase5Deadline, active: 0 },
+        { phase_id: 1, deadline: form.phase1Deadline },
+        { phase_id: 2, deadline: form.phase2Deadline },
+        { phase_id: 3, deadline: form.phase3Deadline },
+        { phase_id: 4, deadline: form.phase4Deadline },
+        { phase_id: 5, deadline: form.phase5Deadline },
       ],
     };
 
@@ -135,26 +141,18 @@ function CreateProject() {
     } else {
       setLoading(true);
 
-      fetch(baseUrl + "api/projects", {
-        method: "POST",
+      fetch(baseUrl + `api/projects/${id}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formatData(form)),
       })
         .then((response) => {
           if (!response.ok) {
-            throw new Error("Failed to create the project");
+            throw new Error("Failed to update the project");
           }
-          console.log("Project created");
+          console.log("Project updated");
           setLoading(false);
-          return response.json();
-        })
-        .then((data) => {
-          const projectId = data.project_id;
-          if (e.target.innerText === "Opslaan en doorgaan") {
-            navigate(`/projecten/toevoegen/${projectId}/template`);
-          } else {
-            navigate("/projecten");
-          }
+          navigate(`/projecten/${id}`);
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -162,34 +160,6 @@ function CreateProject() {
         });
     }
   };
-
-  useEffect(() => {
-    if (form.projectDeadline) {
-      setForm((prevForm) => ({
-        ...prevForm,
-        phase1Deadline: generateDefaultPhaseDeadline(
-          prevForm.projectDeadline,
-          "phase1Deadline"
-        ),
-        phase2Deadline: generateDefaultPhaseDeadline(
-          prevForm.projectDeadline,
-          "phase2Deadline"
-        ),
-        phase3Deadline: generateDefaultPhaseDeadline(
-          prevForm.projectDeadline,
-          "phase3Deadline"
-        ),
-        phase4Deadline: generateDefaultPhaseDeadline(
-          prevForm.projectDeadline,
-          "phase4Deadline"
-        ),
-        phase5Deadline: generateDefaultPhaseDeadline(
-          prevForm.projectDeadline,
-          "phase5Deadline"
-        ),
-      }));
-    }
-  }, [form.projectDeadline]);
 
   function handleGoBack() {
     navigate(-1);
@@ -322,18 +292,8 @@ function CreateProject() {
               >
                 Terug gaan
               </Button>
-              <Button
-                variant="success"
-                value="Opslaan en doorgaan"
-                onClick={handleSubmit}
-                className="primaryBtn"
-              >
-                Opslaan en doorgaan
-              </Button>
-            </div>
-            <div>
-              <Button type="submit" variant="success" className="thirdBtn">
-                Project opslaan
+              <Button variant="success" type="submit" className="primaryBtn">
+                Updates opslaan
               </Button>
             </div>
           </>
@@ -351,22 +311,11 @@ function CreateProject() {
               </Button>
               <Button
                 variant="success"
-                value="Opslaan en doorgaan"
-                onClick={handleSubmit}
+                type="submit"
                 className="primaryBtn"
                 disabled
               >
-                Opslaan en doorgaan
-              </Button>
-            </div>
-            <div>
-              <Button
-                type="submit"
-                variant="success"
-                className="thirdBtn"
-                disabled
-              >
-                Project opslaan
+                Updates opslaan
               </Button>
             </div>
           </>
@@ -376,4 +325,4 @@ function CreateProject() {
   );
 }
 
-export default CreateProject;
+export default UpdateProject;

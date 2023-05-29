@@ -26,7 +26,9 @@ class Project extends Model
 
     public function phases(): BelongsToMany
     {
-        return $this->belongsToMany(Phase::class)->withPivot('deadline', 'active');;
+        return $this->belongsToMany(Phase::class)
+            ->withPivot('deadline', 'active')
+            ->withTimestamps();
     }
 
     public function checklistProjects(): HasMany

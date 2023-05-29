@@ -25,7 +25,14 @@ html body {
   background-color: #037272;
   opacity: 0.8;
 }
+.primaryBtn:disabled{
+  background-color: #037272;
+}
 .secondryBtn:hover{
+  opacity: 0.8;
+  background-color: #5C6174;
+}
+.secondryBtn:disabled{
   opacity: 0.8;
   background-color: #5C6174;
 }
@@ -38,7 +45,7 @@ html body {
   cursor: pointer;
   transition: all 0.2s;
 }
-.primaryBtnLink:hover, .thirdBtn:hover {
+.primaryBtnLink:hover, .thirdBtn:hover, .thirdBtn:disabled {
   border: 1px solid #037272;
   background-color: transparent;
   color: #037272;
