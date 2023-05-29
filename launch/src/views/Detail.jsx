@@ -3,8 +3,9 @@ import React, { useState, useEffect } from "react";
 import Timeline from "../components/Timeline";
 import Countdown from "../components/Countdown";
 import ChecklistTable from "../components/ChecklistTable";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, Link, useParams } from "react-router-dom";
 import DetailsPerPhase from "../components/DetailsPerPhase";
+import ConfirmationDialog from "../components/ConfirmationDialog";
 
 function Detail() {
   const baseUrl = import.meta.env.VITE_BASE_URL;
@@ -18,6 +19,9 @@ function Detail() {
   const [details, setDetails] = useState([]);
   //phases with checklists
   const [phases, setPhases] = useState([]);
+  const navigate = useNavigate();
+  // confirmation dialog
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   useEffect(() => {
     //project timeline
@@ -74,6 +78,34 @@ function Detail() {
     setDeadlineDate(activePhase ? activePhase.deadline : "");
     //console.log(deadlineDate);
   }, [projectTimeline]);
+
+  const handleDelete = () => {
+    fetch(baseUrl + `api/projects/${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to delete the project");
+        }
+        navigate(`/projecten`);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
+  const handleConfirmationTrigger = () => {
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmationChoice = (choice) => {
+    if (choice === "yes") {
+      handleDelete();
+    }
+
+    setShowConfirmation(false);
+  };
 
   return (
     <>
@@ -132,6 +164,28 @@ function Detail() {
           </span>
         </div>
         <DetailsPerPhase details={details}></DetailsPerPhase>
+      </Container>
+
+      <Container>
+        <div className="action-btns">
+          <Link
+            to={`/projecten/${id}/bewerken`}
+            className="btn btn-primary secondryBtnLink"
+          >
+            Project bewerken
+          </Link>
+          <Button
+            onClick={handleConfirmationTrigger}
+            variant="danger"
+            className="thirdBtn"
+          >
+            Project verwijderen
+          </Button>
+          <ConfirmationDialog
+            showConfirmation={showConfirmation}
+            handleConfirmationChoice={handleConfirmationChoice}
+          ></ConfirmationDialog>
+        </div>
       </Container>
 
       <div className="container homeSec2">

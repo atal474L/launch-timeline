@@ -23,6 +23,7 @@ Route::get('projects-overview', [ProjectController::class, 'getProjectsOverview'
 
 Route::post('projects', [ProjectController::class, 'storeProject']);
 Route::put('projects/{project}', [ProjectController::class, 'updateProject']);
+Route::delete('projects/{project}', [ProjectController::class, 'deleteProject']);
 
 Route::get('projects/{project}/checklist/template', [ProjectController::class, 'getProjectChecklistTemplate']);
 Route::put('projects/{project}/checklist/template', [ProjectController::class, 'configureProjectChecklistTemplate']);

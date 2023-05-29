@@ -444,6 +444,15 @@ a.nav-links:hover::after {
   font-weight: 600;
 }
 
+.action-btns .thirdBtn{
+  margin-left: 1em;
+}
+
+.action-btns .thirdBtn:hover{
+  color: red;
+  border: none;
+}
+
 
 
 /* Create project page */

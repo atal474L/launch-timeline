@@ -108,7 +108,6 @@ class ProjectController extends Controller
         $project->checklistProjects()->createMany($checklistItems);
 
         return $this->respondCreated(['project_id' => $project->id]);
-        //return response()->json(['message' => 'The project has been created', 'project_id' => $project->id]);
     }
 
 
@@ -156,6 +155,15 @@ class ProjectController extends Controller
                 'comment' => ''
             ];
         })->all();
+    }
+
+
+    public function deleteProject(Project $project)
+    {
+        $project->phases()->detach();
+        $project->delete();
+
+        return $this->respondOk('The project has been deleted');
     }
 
 
@@ -295,13 +303,5 @@ class ProjectController extends Controller
         return $this->respondWithSuccess($grouped_checklist_projects);
     }
 
-    public function update(Request $request, $id)
-    {
-        //
-    }
 
-    public function destroy($id)
-    {
-        //
-    }
 }
