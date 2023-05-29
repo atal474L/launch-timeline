@@ -161,6 +161,7 @@ class ProjectController extends Controller
     public function deleteProject(Project $project)
     {
         $project->phases()->detach();
+        $project->checklistProjects()->delete();
         $project->delete();
 
         return $this->respondOk('The project has been deleted');

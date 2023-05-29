@@ -35,10 +35,6 @@ class ChecklistController extends Controller
 
     public function editChecklist(Project $project, Phase $phase, Request $request)
     {
-//        ChecklistProject::where('id', $request->id)
-//            ->update(["question_checked" => $request->question_checked]);
-
-
         $ids = $request->input('ids');
         $questionChecked = $request->input('question_checked');
 
@@ -69,12 +65,12 @@ class ChecklistController extends Controller
         }
 
         if (!$hasZeroValue && $activePhaseId < 5) {
-//            $project->phases()->updateExistingPivot($phase->id, ['active' => 0]);
-//            $project->phases()->updateExistingPivot($phase->id + 1, ['active' => 1]);
-            $project->phases()->sync([
-                $phase->id => ['active' => 0],
-                $phase->id + 1 => ['active' => 1]
-            ]);
+            $project->phases()->updateExistingPivot($phase->id, ['active' => 0]);
+            $project->phases()->updateExistingPivot($phase->id + 1, ['active' => 1]);
+        }
+        if (!$hasZeroValue && $activePhaseId === 5) {
+            $project->state = 'inactive';
+            $project->save();
         }
 
         return $this->respondOk('The checklist has been configured');

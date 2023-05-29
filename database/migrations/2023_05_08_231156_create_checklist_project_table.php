@@ -18,7 +18,7 @@ return new class extends Migration
 
             $table->foreignId('project_id')
                 ->constrained()
-                ->nullOnDelete();
+                ->cascadeOnDelete();
 
             $table->foreignId('checklist_template_id')->constrained('checklist_templates')
                 ->restrictOnUpdate()
@@ -29,7 +29,7 @@ return new class extends Migration
                 ->restrictOnDelete();
 
             $table->boolean('question_checked');
-            $table->string('comment');
+            $table->string('comment')->nullable();
 
             $table->timestamps();
         });
