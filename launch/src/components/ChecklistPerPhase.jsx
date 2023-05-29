@@ -4,7 +4,7 @@ import OneCheckbox from "../components/OneCheckbox";
 const ChecklistPerPhase = ({ phase, selectedItems, checkboxHandler }) => {
   const [phaseNameOptions, setPhaseNameOptions] = useState([
     "CMS training",
-    "Pre Pre launch",
+    "Pre Pre-launch",
     "Pre-launch",
     "Post launch",
     "Offboarding",

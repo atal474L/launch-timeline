@@ -19,7 +19,7 @@ export default function Projects() {
   const [projects, setProjects] = useState([]);
   const [phaseNameOptions, setPhaseNameOptions] = useState([
     "CMS training",
-    "Pre Pre launch",
+    "Pre Pre-launch",
     "Pre-launch",
     "Post launch",
     "Offboarding",

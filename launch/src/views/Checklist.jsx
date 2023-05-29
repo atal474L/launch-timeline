@@ -10,7 +10,7 @@ function Checklist() {
   const [selectedItems, setSelectedItems] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const { projectId, checklistId } = useParams();
-  const progress = (selectedItems.length / data.length) * 100;
+  const progress = Math.round((selectedItems.length / data.length) * 100);
   const navigate = useNavigate();
   const title = [
     "CMS training",

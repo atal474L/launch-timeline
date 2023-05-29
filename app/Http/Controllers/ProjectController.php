@@ -77,7 +77,7 @@ class ProjectController extends Controller
             $activeChecks = $project->checklistProjects->where('phase_id', $activePhaseId)->count();
             $checked = $project->checklistProjects->where('phase_id', $activePhaseId)->where('question_checked', 1)->count();
 
-            $project->progress = $activeChecks > 0 ? ($checked / $activeChecks) * 100 : 0;
+            $project->progress = $activeChecks > 0 ? intval(($checked / $activeChecks) * 100) : 0;
 
             return $project;
         });
@@ -299,7 +299,7 @@ class ProjectController extends Controller
                 }
             }
             $grouped_checklist_projects[$key]['checked'] = $checked;
-            $grouped_checklist_projects[$key]['progress'] = (($checked / $grouped_checklist_projects[$key]['total_checks']) * 100);
+            $grouped_checklist_projects[$key]['progress'] = intval((($checked / $grouped_checklist_projects[$key]['total_checks'])) * 100);
 
         }
 
