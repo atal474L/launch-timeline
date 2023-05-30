@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('phase_id')->constrained();
-            $table->string('question');
+            $table->string('question', 500);
 
             $table->timestamps();
         });

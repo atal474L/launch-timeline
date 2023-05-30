@@ -9,7 +9,6 @@ export default function ProjectTable(props) {
 
   useEffect(() => {
     setData(props.projects);
-    console.log(data);
   }, [props]);
 
   const sorting = (col) => {

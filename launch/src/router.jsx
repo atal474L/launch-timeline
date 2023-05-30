@@ -6,7 +6,6 @@ import Template from "./views/Template";
 import Detail from "./views/Detail";
 import Checklist from "./views/Checklist";
 import DefaultLayout from "./components/DefaultLayout";
-import Timeline from "./components/Timeline";
 import Login from "./views/Login";
 import UpdateProject from "./views/UpdateProject";
 
@@ -18,10 +17,6 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
-      },
-      {
-        path: "/test",
-        element: <Timeline />,
       },
       {
         path: "/projecten",
